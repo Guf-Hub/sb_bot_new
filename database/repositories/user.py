@@ -31,9 +31,8 @@ class UserRepo(Repository[User]):
         return await self.session.scalar(select(User).where(User.user_id == user_id))
 
     async def is_exist(self, user_id: int) -> bool:
-        return await self.session.scalar(
-            exists().where(User.user_id == user_id)
-        )
+        result = await self.session.execute(select(exists().where(User.id == user_id)))
+        return result.scalar()
 
     async def get_one_by_pk(self, pk: int) -> User | None:
         return await self.session.scalar(select(User).where(User.id == pk))
@@ -73,6 +72,9 @@ class UserRepo(Repository[User]):
                     select(User.role).where(User.user_id == user_id)
                 ) == Role.supervisor
         )
+
+    async def get_role(self, user_id: int) -> User.role | None:
+        return await self.session.scalar(select(User.role).where(User.user_id == user_id))
 
     async def get_hr(self) -> User | None:
         result = await self.session.scalar(select(User).where(User.position.contains('HR')))

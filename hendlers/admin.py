@@ -57,6 +57,35 @@ gs: GoogleSheetsSettings = settings.gs
 router = Router(name=__name__)
 router.message.filter(and_f(AdminFilter(), ChatTypeFilter(['private'])))
 
+states = StateFilter(
+    EmployeeAdd,
+    EmployeeDelete(),
+    EmployeeUpdate(),
+    EmployeeActivate(),
+    PointAdd(),
+    PointDelete(),
+    PointUpdate(),
+    Mailing(),
+)
+
+
+@router.message(Command("cancel"), states)
+@router.message(F.text.lower().in_({'отмена', 'отменить', '❌ отмена', '⬆ выйти', 'cancel'}), states)
+async def cancel_handler(message: Message, state: FSMContext, db: Database) -> None:
+    await state.clear()
+    user_role_reply_markup = {
+        Role.administrator: ('Еще вопросы? 👇', boss_staff_menu),
+        Role.staff: ('Еще вопросы? 👇', main_menu),
+        Role.supervisor: ('Еще вопросы? 👇', main_menu)
+    }
+
+    user_id = message.from_user.id
+    user_role = await db.user.get_role(user_id=user_id)
+    logging.info(user_role)
+    answer_text, reply_markup = user_role_reply_markup.get(user_role)
+
+    await message.answer(answer_text, disable_web_page_preview=True, reply_markup=reply_markup)
+
 
 @router.message(StateFilter(None), F.text.lower() == '🚹 добавить')
 async def employee_add_start(message: Message, state: FSMContext):
@@ -77,12 +106,11 @@ async def employee_add_user_id(message: Message, state: FSMContext, db: Database
     else:
 
         staff = (
-            f'Сотрудник уже в базе 🤷‍♂️\n'
+            f'<b>Уже в базе</b> 🤷‍♂️\n'
             f'Сотрудник: {user.full_name}\n'
             f'Должность: {user.position}\n'
             f'Точка: {user.point}\n'
-            f'Админ: {user.is_admin}\n'
-            f'Супервайзер: {user.is_supervisor}\n'
+            f'Доступ: {user.role.value}\n'
             f'Активен: {user.status}'
         )
 
@@ -173,7 +201,7 @@ async def employee_add_role(message: Message, state: FSMContext, db: Database):
             f'Должность: {data["position"]}\n'
             f'Точка: {data["point"]}\n'
             f'Доступ: {data["role"]}\n'
-            f'Точки: {data["points"] if data["points"] is not None else "Нет"}',
+            f'Точки: {data["points"] if data.get("points") is not None else "Нет"}',
             reply_markup=boss_staff_menu
         )
         try:
@@ -214,7 +242,7 @@ async def employee_add_end(message: Message, state: FSMContext, db: Database):
         f'Должность: {data["position"]}\n'
         f'Точка: {data["point"]}\n'
         f'Доступ: {data["role"]}\n'
-        f'Точки: {data["points"] if data["points"] is not None else "Нет"}',
+        f'Точки: {data["points"] if data.get("points") is not None else "Нет"}',
         reply_markup=boss_staff_menu
     )
     try:
@@ -302,7 +330,7 @@ async def employee_update_role(message: Message, state: FSMContext, db: Database
             f'{data["last_name"]} {data["first_name"]}\n'
             f'Должность: {data["position"]}\n'
             f'Точка: {data["point"]}\n'
-            f'Доступ: {data["role"]}\n'
+            f'Доступ: {Role[data["role"]].value}\n'
             f'Точки: {data["points"] if data["points"] is not None else "Нет"}',
             reply_markup=boss_staff_menu
         )
@@ -331,7 +359,7 @@ async def employee_update_end(message: Message, state: FSMContext, db: Database)
         f'{data["last_name"]} {data["first_name"]}\n'
         f'Должность: {data["position"]}\n'
         f'Точка: {data["point"]}\n'
-        f'Доступ: {data["role"]}\n'
+        f'Доступ: {Role[data["role"]].value}\n'
         f'Точки: {data["points"] if data["points"] is not None else "Нет"}',
         reply_markup=boss_staff_menu
     )

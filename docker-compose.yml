@@ -163,7 +163,7 @@ services:
 
   bot:
     container_name: sb-bot
-    image: "bot"
+    image: bot:latest
     stop_signal: SIGINT
     build:
       context: .

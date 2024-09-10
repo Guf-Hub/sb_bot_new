@@ -187,7 +187,7 @@ git push -u origin main
 Push an existing repository from the command line
 
 ```bash
-git remote add origin https://github.com/Guf-Hub/sb_bot_new.git
+git remote add origin https://github.com/Guf-Hub/git
 git branch -M main
 git push -u origin main
 ```

@@ -9,11 +9,7 @@ class Position(Base):
     # _user_id_unique = True
     # _user_back_populates = "position"
 
-    # id: Mapped[int_pk]
+    id: Mapped[int_pk]
     name: Mapped[str_50] = mapped_column(nullable=False, unique=True)
 
-    repr_cols_num = 3
-    # repr_cols = ("created_at", )
-
-    # def __repr__(self) -> str:
-    #     return f"{self.__class__.__name__}({self.id=}, {self.name=}, {self.created_at=})"
+    repr_cols_num = Base.get_num_keys()

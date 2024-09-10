@@ -2,7 +2,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import User
-from .base import Base
+from .base import Base, int_pk
 
 
 # class Category(Base):
@@ -19,6 +19,8 @@ from .base import Base
 
 
 class Product(Base):
+
+    id: Mapped[int_pk]
     code: Mapped[int] = mapped_column(sa.Integer, nullable=False, unique=True)
     product: Mapped[str] = mapped_column(sa.String(255), nullable=True)  # name
     group_product: Mapped[str] = mapped_column(sa.String(255), nullable=True)  # category
@@ -31,6 +33,8 @@ class Product(Base):
     # category_id: Mapped[int] = mapped_column(sa.ForeignKey('categories.id', ondelete='CASCADE'), nullable=False)
     # category: Mapped['Category'] = relationship(backref='products')
 
+    repr_cols_num = Base.get_num_keys()
+
     def to_dict(self):
         return {
             'code': self.code,
@@ -40,16 +44,6 @@ class Product(Base):
             'price': self.price
         }
 
-    def __repr__(self) -> str:
-        return (f"{self.__class__.__name__}("
-                f"{self.id=}, "
-                f"{self.code=}, "
-                f"{self.product=}, "
-                f"{self.group_product=}, "
-                f"{self.unit=}, "
-                f"{self.price=}, "
-                f"{self.created_at=}, "
-                f"{self.updated_at=})")
 
 # class Cart(Base):
 #
