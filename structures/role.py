@@ -7,8 +7,6 @@ class Role(enum.Enum):
     supervisor = "Супервайзер"
     admin = "Админ"
 
-    # master = "Мастер"
-
     @classmethod
     def values(cls):
         return tuple(role.value for role in cls)
