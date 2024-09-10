@@ -62,7 +62,7 @@ else:
         datetime,
         mapped_column(
             server_default=text("TIMEZONE('Europe/Moscow', now())"),
-            onupdate=datetime.now(),
+            onupdate=text("TIMEZONE('Europe/Moscow', now())"),
         ),
     ]
 

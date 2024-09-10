@@ -47,15 +47,16 @@ ALLOWED_UPDATES = ["message", "callback_query"]
 # )
 
 """
-# https://habr.com/ru/articles/725086/
-# https://docs.aiogram.dev/en/latest/utils/keyboard.html#reply-keyboard
-# https://www.youtube.com/watch?v=55w2QpPGC-E&list=PLNi5HdK6QEmWLtb8gh8pwcFUJCAabqZh_&index=6
-# https://docs.google.com/spreadsheets/d/1L7CbxCwtRB79VmpqbV7R2PyE3vcy8IZIlq6IGDlH04w/edit?gid=0#gid=0
-# https://github.com/o-murphy/aiogram3_calendar/tree/master
-# https://github.com/mahenzon/micro-shop/blob/1d5b9820e2185786599748047bd64fe232079e7c/crud.py
-# https://www.youtube.com/watch?v=uLp-zgset00
-# https://github.com/artemonsh/sqlalchemy_course/blob/main/src/queries/orm.py
-# https://github.com/artemonsh/sqlalchemy_course/blob/main/src/queries/orm.py
+https://habr.com/ru/articles/725086/
+https://docs.aiogram.dev/en/latest/utils/keyboard.html#reply-keyboard
+https://www.youtube.com/watch?v=55w2QpPGC-E&list=PLNi5HdK6QEmWLtb8gh8pwcFUJCAabqZh_&index=6
+https://docs.google.com/spreadsheets/d/1L7CbxCwtRB79VmpqbV7R2PyE3vcy8IZIlq6IGDlH04w/edit?gid=0#gid=0
+https://github.com/o-murphy/aiogram3_calendar/tree/master
+https://github.com/mahenzon/micro-shop/blob/1d5b9820e2185786599748047bd64fe232079e7c/crud.py
+https://www.youtube.com/watch?v=uLp-zgset00
+https://github.com/artemonsh/sqlalchemy_course/blob/main/src/queries/orm.py
+https://github.com/artemonsh/sqlalchemy_course/blob/main/src/queries/orm.py
+https://github.com/mahenzon/demo-tg-bot/blob/e4b687d51600722f1f93b26fdc17d329bad06ee1/routers/common.py
 """
 
 

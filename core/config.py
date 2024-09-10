@@ -40,6 +40,7 @@ class DBSettings(DefaultConfig):
     POSTGRES_HOST: str
     POSTGRES_PORT: int
 
+    PGADMIN_PORT: Optional[int] = None
     PGADMIN_EMAIL: str
     PGADMIN_PASSWORD: str
     PGADMIN_CONFIG_SERVER_MODE: bool

@@ -57,7 +57,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
       #      PGDATA: /data/postgres
-      PGDATA: "/var/lib/postgresql/data/postgres"
+      #      PGDATA: "/var/lib/postgresql/data/postgres"
+      PGDATA: "/var/lib/postgres/data"
       PGTZ: "Europe/Moscow"
     #      TZ:Europe/Moscow
     env_file:
@@ -108,6 +109,8 @@ services:
       - "TimeZone=${TZ:-Europe/Moscow}"
       - "-c"
       - "log_statement=all"
+      - "-c"
+      - "log_destination=stderr"
     deploy:
       resources:
         limits:
@@ -116,6 +119,9 @@ services:
     networks:
       - dev
       - postgres
+  #      - docker_net:
+  #          ipv4_address: 172.19.0.2
+
 
   pgadmin:
     container_name: sb-pgadmin
@@ -126,7 +132,6 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: ${PGADMIN_CONFIG_SERVER_MODE:-False}
     volumes:
       - pgadmin:/var/lib/pgadmin
-    #      - pgadmin:/data/pgadmin
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
@@ -137,6 +142,9 @@ services:
           memory: 1G
     networks:
       - postgres
+  #      - mp_net:
+  #          ipv4_address: 172.19.0.4
+
 
   postgres_exporter:
     container_name: sb-pg-exporter
@@ -194,3 +202,9 @@ networks:
   dev:
   postgres:
     driver: bridge
+  docker_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
