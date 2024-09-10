@@ -666,7 +666,7 @@ async def check_report_comment(message: Message, state: FSMContext, db: Database
     #         get_current_datetime().replace(tzinfo=timezone.utc) -
     #         report.created_at.replace(tzinfo=timezone.utc)).total_seconds()
 
-    report_created_at_moscow = report.created_at
+    report_created_at_moscow = report.created_at.astimezone(get_current_datetime().tzinfo)
 
     time_diff_seconds = (
             get_current_datetime() -
