@@ -5,7 +5,7 @@ class Role(enum.Enum):
     """ Roles """
     staff = "Сотрудник"
     supervisor = "Супервайзер"
-    administrator = "Администратор"
+    admin = "Админ"
 
     # master = "Мастер"
 
