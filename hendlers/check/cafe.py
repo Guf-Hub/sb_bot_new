@@ -662,15 +662,14 @@ async def check_report_comment(message: Message, state: FSMContext, db: Database
 
     report = await db.check_cafe.get_by_id(report_id=report_id)
 
-    # time_diff_seconds = (
-    #         get_current_datetime().replace(tzinfo=timezone.utc) -
-    #         report.created_at.replace(tzinfo=timezone.utc)).total_seconds()
-
-    report_created_at_moscow = report.created_at.astimezone(get_current_datetime().tzinfo)
-
     time_diff_seconds = (
-            get_current_datetime() -
-            report_created_at_moscow).total_seconds()
+            get_current_datetime().replace(tzinfo=timezone.utc) -
+            report.created_at.replace(tzinfo=timezone.utc)).total_seconds()
+
+    # report_created_at_moscow = report.created_at.astimezone(get_current_datetime().tzinfo)
+    # time_diff_seconds = (
+    #         get_current_datetime() -
+    #         report_created_at_moscow).total_seconds()
 
     seconds = time.gmtime(time_diff_seconds)
     duration_formatted = time.strftime("%H:%M:%S", seconds)
