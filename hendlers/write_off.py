@@ -54,6 +54,7 @@ from services.async_google_service import (
 )
 
 from services.path import create_dir, clear_dir, create_src
+from structures.role import Role
 from utils.utils import includes_number, get_current_datetime, get_user_role
 
 pp = pp.PrettyPrinter(indent=4)
@@ -81,17 +82,17 @@ states = StateFilter(
 
 @router.message(Command("cancel"), states)
 @router.message(F.text.lower().in_({'отмена', 'отменить', '❌ отмена', '⬆ выйти', 'cancel'}), states)
-async def cancel_handler(message: Message, state: FSMContext) -> None:
+async def cancel_handler(message: Message, state: FSMContext, db: Database) -> None:
     await state.clear()
     user_role_reply_markup = {
-        "boss": ('Еще вопросы? 👇', boss_other_menu),
-        "staff": ('Еще вопросы? 👇', main_menu)
+        Role.admin: ('Еще вопросы? 👇', boss_main_menu),
+        Role.staff: ('Еще вопросы? 👇', main_menu),
+        Role.supervisor: ('Еще вопросы? 👇', main_menu)
     }
 
     user_id = message.from_user.id
-    user_role = await get_user_role(user_id)
-    answer_text, reply_markup = user_role_reply_markup[user_role]
-
+    user_role = await db.user.get_role(user_id=user_id)
+    answer_text, reply_markup = user_role_reply_markup.get(user_role)
     await message.answer(answer_text, disable_web_page_preview=True, reply_markup=reply_markup)
 
 
@@ -662,40 +663,39 @@ async def clear_folder(message: Message):
 
 
 @router.message(or_f(Command("cancel"), (F.text.lower().in_({'отмена', 'отменить', '❌ отмена', '⬆ выйти'}))))
-async def cancel(message: Message, state: FSMContext):
+async def cancel(message: Message, state: FSMContext, db: Database):
     """Отмена действия и выход из состояния"""
-    user_id = message.from_user.id
-    current_state = await state.get_state()
 
+    current_state = await state.get_state()
     if current_state is not None:
         await state.clear()
 
-    # logging.info("Cancelling state %r", current_state)
-    # await message.reply('Выполнено')
-
     user_role_reply_markup = {
-        "boss": ('Еще вопросы? 👇', boss_main_menu),
-        "staff": ('Еще вопросы? 👇', main_menu)
+        Role.admin: ('Еще вопросы? 👇', boss_main_menu),
+        Role.staff: ('Еще вопросы? 👇', main_menu),
+        Role.supervisor: ('Еще вопросы? 👇', main_menu)
     }
 
-    user_role = await get_user_role(user_id)
-    answer_text, reply_markup = user_role_reply_markup[user_role]
-
+    user_id = message.from_user.id
+    user_role = await db.user.get_role(user_id=user_id)
+    answer_text, reply_markup = user_role_reply_markup.get(user_role)
     await message.answer(answer_text, disable_web_page_preview=True, reply_markup=reply_markup)
 
 
 @router.message()
-async def empty(message: Message):
+async def empty(message: Message, db: Database):
     """Не понятные сообщения"""
-    user_id = message.from_user.id
+
     text = message.text
 
     user_role_reply_markup = {
-        "boss": boss_main_menu,
-        "staff": main_menu
+        Role.admin:  boss_main_menu,
+        Role.staff:  main_menu,
+        Role.supervisor:  main_menu
     }
 
-    user_role = await get_user_role(user_id)
-    reply_markup = user_role_reply_markup[user_role]
-    await message.answer(f'{text}\nЧто за ересь??? 🤣\nУчи матчасть >>> /help', disable_web_page_preview=True,
-                         reply_markup=reply_markup)
+    user_id = message.from_user.id
+    user_role = await db.user.get_role(user_id=user_id)
+    reply_markup = user_role_reply_markup.get(user_role)
+    answer_text = f'{text}\nЧто за ересь??? 🤣\nУчи матчасть >>> /help'
+    await message.answer(answer_text, disable_web_page_preview=True, reply_markup=reply_markup)

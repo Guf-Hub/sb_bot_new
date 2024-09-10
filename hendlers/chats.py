@@ -25,6 +25,7 @@ from structures.keybords import (
 from structures.keybords.cb_makers import create_inline_kb
 
 from core.bot import bot
+from structures.role import Role
 from utils.utils import get_user_role
 
 # from services.questions import help_msg
@@ -39,16 +40,8 @@ async def start_command(message: Message, db: Database):
     user_id = message.from_user.id
     first_name = message.from_user.first_name if message.from_user.first_name else None
 
-    # if not await db.user_get(session, user_id=user_id):
     if not await db.user.is_exist(user_id=user_id):
         last_name = message.from_user.last_name if message.from_user.last_name else None
-
-        # await db.user.add(
-        #     User(
-        #         user_id=user_id,
-        #         status=False
-        #     )
-        # )
 
         inline = create_inline_kb(
             btns={'✅ Добавить?': f'employeeAdd_{user_id}', '❌ Отмена': f'employeeCancel_{user_id}'},
@@ -62,21 +55,24 @@ async def start_command(message: Message, db: Database):
         else:
             await bot.send_message(settings.bot.MASTER, text=msg, reply_markup=inline)
 
-        welcome_msg = (f'Привет, {first_name} 👋'
-                       f'Добро пожаловать в команду Sorry Бабушка. '
-                       f'Я бот помощник, запишу рабочую информацию. '
+        welcome_msg = (f'Привет, {first_name} 👋\n'
+                       f'Добро пожаловать в команду Sorry Бабушка.\n'
+                       f'Я бот помощник, запишу рабочую информацию.\n'
                        f'Ждем активации от Александры @sasha_izy, для дальнейшей работы.')
 
         await message.answer(welcome_msg)
 
     else:
+
         user_role_reply_markup = {
-            "boss": ('Менюшечка 👇', boss_main_menu),
-            "staff": ('Менюшечка 👇', main_menu)
+            Role.admin: ('Еще вопросы? 👇', boss_main_menu),
+            Role.staff: ('Еще вопросы? 👇', main_menu),
+            Role.supervisor: ('Еще вопросы? 👇', main_menu)
         }
 
-        user_role = await get_user_role(user_id)
-        answer_text, reply_markup = user_role_reply_markup[user_role]
+        user_id = message.from_user.id
+        user_role = await db.user.get_role(user_id=user_id)
+        answer_text, reply_markup = user_role_reply_markup.get(user_role)
         await message.answer(answer_text, disable_web_page_preview=True, reply_markup=reply_markup)
 
 
@@ -121,17 +117,18 @@ async def commands_admin(message: Message):
 
 
 @router.message(or_f(Command("help"), (F.text.lower().in_({'📌 справка'}))))
-async def command_help(message: Message):
+async def command_help(message: Message, db: Database):
     """This function handles the command "help" and sends the help message to the user."""
-    user_id = message.from_user.id
 
     user_role_reply_markup = {
-        "boss": (help_msg['boss'], boss_main_menu),
-        "staff": (help_msg['main'], main_menu)
+        Role.admin:(help_msg['boss'], boss_main_menu),
+        Role.staff: (help_msg['main'], main_menu),
+        Role.supervisor:(help_msg['main'], main_menu)
     }
 
-    user_role = await get_user_role(user_id)
-    answer_text, reply_markup = user_role_reply_markup[user_role]
+    user_id = message.from_user.id
+    user_role = await db.user.get_role(user_id=user_id)
+    answer_text, reply_markup = user_role_reply_markup.get(user_role)
     await message.answer(answer_text, disable_web_page_preview=True, reply_markup=reply_markup)
 
 

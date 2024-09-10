@@ -43,6 +43,7 @@ from structures.fsm.expenses import (
 from structures.keybords.keybords_list import boss_category_m
 from services.async_google_service import google_add_row, google_authorize_token, google_save_file
 from services.path import create_dir, clear_dir, create_src
+from structures.role import Role
 from utils.utils import includes_number, get_current_datetime, get_user_role
 from core.config import settings, GoogleSheetsSettings
 
@@ -254,12 +255,14 @@ async def payments_check(message: Message, state: FSMContext, db: Database):
           f'#Расход'
 
     user_role_reply_markup = {
-        "boss": boss_payments_menu,
-        "staff": remove
+        Role.admin: boss_payments_menu,
+        Role.staff: remove,
+        Role.supervisor: remove
     }
 
-    user_role = await get_user_role(user_id)
-    reply_markup = user_role_reply_markup[user_role]
+    user_id = message.from_user.id
+    user_role = await db.user.get_role(user_id=user_id)
+    reply_markup = user_role_reply_markup.get(user_role)
     await message.answer(msg, reply_markup=reply_markup)
     await state.clear()
 
