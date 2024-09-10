@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import logging
 import os
 import re
@@ -9,7 +7,7 @@ import aiohttp
 import pytils
 
 from aiogram import Router, F
-from aiogram.filters import StateFilter, and_f
+from aiogram.filters import StateFilter, and_f, Command
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import (Message, FSInputFile, CallbackQuery)
 from aiogram.fsm.context import FSMContext
@@ -33,7 +31,7 @@ from structures.keybords.keybords import (
     boss_projects_expenses_menu,
     cancel_menu,
     remove,
-    no_check,
+    no_check, main_menu,
 )
 
 from structures.fsm.expenses import (
@@ -51,6 +49,30 @@ gs: GoogleSheetsSettings = settings.gs
 
 router = Router(name=__name__)
 router.message.filter(and_f(AdminFilter(), ChatTypeFilter(['private'])))
+
+
+states = StateFilter(
+    Home(),
+    Payments(),
+    Projects(),
+)
+
+
+@router.message(Command("cancel"), states)
+@router.message(F.text.lower().in_({'отмена', 'отменить', '❌ отмена', '⬆ выйти', 'cancel'}), states)
+async def cancel_check_day_handler(message: Message, state: FSMContext, db: Database) -> None:
+    await state.clear()
+    user_role_reply_markup = {
+        Role.admin: ('Еще вопросы? 👇', boss_payments_menu),
+        Role.staff: ('Еще вопросы? 👇', main_menu),
+        Role.supervisor: ('Еще вопросы? 👇', main_menu)
+    }
+
+    user_id = message.from_user.id
+    user_role = await db.user.get_role(user_id=user_id)
+    answer_text, reply_markup = user_role_reply_markup.get(user_role)
+
+    await message.answer(answer_text, disable_web_page_preview=True, reply_markup=reply_markup)
 
 
 @router.message(StateFilter(None), F.text.lower() == '🏠 расход')

@@ -33,7 +33,7 @@ class RestrictionsMiddleware(BaseMiddleware):
         try:
             await handler(event, data)
         except Exception as e:
-            logging.exception(f'An error occurred in the handler: {e}')
+            logging.exception('An error occurred in the handler: %s', e)
             # Handle the exception appropriately
 
     @staticmethod

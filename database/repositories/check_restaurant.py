@@ -4,11 +4,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, func, cast, Date
 from sqlalchemy.orm import joinedload
 
-from ..models import CheckDay
+from ..models import CheckRestaurant
 from .abstract import Repository
 
 
-class CheckDayRepo(Repository[CheckDay]):
+class CheckRestaurantRepo(Repository[CheckRestaurant]):
     """
     User repository for CRUD and other SQL queries
     """
@@ -17,34 +17,34 @@ class CheckDayRepo(Repository[CheckDay]):
         """
         Initialize user repository as for all users or only for one user
         """
-        super().__init__(type_model=CheckDay, session=session)
+        super().__init__(type_model=CheckRestaurant, session=session)
 
-    async def add(self, check_day: CheckDay) -> int:
+    async def add(self, check_day: CheckRestaurant) -> int:
         self.session.add(check_day)
         await self.session.commit()
         return check_day.id
 
     async def get_by_id(self, report_id: int):
-        return await self.session.scalar(select(CheckDay).options(
-            joinedload(CheckDay.user),
-        ).where(CheckDay.id == report_id))
+        return await self.session.scalar(select(CheckRestaurant).options(
+            joinedload(CheckRestaurant.user),
+        ).where(CheckRestaurant.id == report_id))
 
     async def get_reports_by_date(self, date: str):
-        return await self.session.scalars(select(CheckDay).options(
-            joinedload(CheckDay.user),
-        ).where(CheckDay.add_date.cast(Date) == datetime.strptime(date, '%Y-%m-%d').date()))
+        return await self.session.scalars(select(CheckRestaurant).options(
+            joinedload(CheckRestaurant.user),
+        ).where(CheckRestaurant.add_date.cast(Date) == datetime.strptime(date, '%Y-%m-%d').date()))
 
     async def update(self, report_id: int, **kwargs):
-        query = update(CheckDay).where(CheckDay.id == report_id).values(**kwargs)
+        query = update(CheckRestaurant).where(CheckRestaurant.id == report_id).values(**kwargs)
         await self.session.execute(query)
         await self.session.commit()
 
     async def is_unique_report_by_date(self, point: str, report_type: str, date: str):
         """Check if a report for a specific date already exists in the database (check_day)"""
         return await self.session.scalar(
-            select(CheckDay).options(joinedload(CheckDay.user)).where(CheckDay.point == point,
-                                                                      CheckDay.type == report_type,
-                                                                      CheckDay.add_date.cast(Date) == datetime.strptime(
+            select(CheckRestaurant).options(joinedload(CheckRestaurant.user)).where(CheckRestaurant.point == point,
+                                                                      CheckRestaurant.type == report_type,
+                                                                      CheckRestaurant.add_date.cast(Date) == datetime.strptime(
                                                                           date, '%Y-%m-%d').date()))
 
     async def get_reports_by_period(self, start_date: str, end_date: str):
@@ -56,18 +56,18 @@ class CheckDayRepo(Repository[CheckDay]):
         """
         query = (
             select(
-                CheckDay.supervisor.label('sv'),
-                CheckDay.type,
-                func.count(CheckDay.in_time).label('count_in_time'),
-                func.sum(CheckDay.in_time).label('sum_in_time'),
+                CheckRestaurant.supervisor.label('sv'),
+                CheckRestaurant.type,
+                func.count(CheckRestaurant.in_time).label('count_in_time'),
+                func.sum(CheckRestaurant.in_time).label('sum_in_time'),
                 # func.sum(
                 #     func.ifnull(
-                #         func.strftime('%s', CheckDay.updated_at) - func.strftime('%s', CheckDay.created_at), 0))
-                # / func.count(CheckDay.updated_at).label('avg_check_datetime'
+                #         func.strftime('%s', CheckRestaurant.updated_at) - func.strftime('%s', CheckRestaurant.created_at), 0))
+                # / func.count(CheckRestaurant.updated_at).label('avg_check_datetime'
             )
-            .where(CheckDay.add_date.between(start_date, end_date))
-            .group_by(CheckDay.supervisor, CheckDay.type)
-            .order_by(CheckDay.supervisor.asc(), CheckDay.type.desc())
+            .where(CheckRestaurant.add_date.between(start_date, end_date))
+            .group_by(CheckRestaurant.supervisor, CheckRestaurant.type)
+            .order_by(CheckRestaurant.supervisor.asc(), CheckRestaurant.type.desc())
         )
 
         result = await self.session.execute(query)

@@ -1,5 +1,3 @@
-# #!/usr/bin/env python3
-# # -*- coding: utf-8 -*-
 import logging
 import os
 import re
@@ -22,7 +20,7 @@ from common.questions import sheets
 from core.bot import bot
 
 from core.config import settings, TgBot, GoogleSheetsSettings
-from database import async_engine, WriteOff, Product, Database, Base
+from database import async_engine, WriteOff, Product, Database
 from database.tabels import truncate_table
 
 from filters.filters import ChatTypeFilter
@@ -55,7 +53,7 @@ from services.async_google_service import (
 
 from services.path import create_dir, clear_dir, create_src
 from structures.role import Role
-from utils.utils import includes_number, get_current_datetime, get_user_role
+from utils.utils import includes_number, get_current_datetime
 
 pp = pp.PrettyPrinter(indent=4)
 
@@ -65,13 +63,6 @@ gs: GoogleSheetsSettings = settings.gs
 router = Router(name=__name__)
 router.message.filter(ChatTypeFilter(['private']))
 
-# async def check_code(code: str = None) -> bool:
-#     """Проверка на наличие переданного кода в БД(codes)"""
-#     if code.strip().isnumeric():
-#         async with AsyncSession(async_engine) as session:
-#             product = await db.product_get(session, code=code)
-#             return bool(product)
-#     return False
 
 states = StateFilter(
     WriteOffAdd(),

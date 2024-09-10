@@ -5,7 +5,8 @@ from .repositories import (
     UserRepo,
     ProductRepo,
     WriteOffRepo,
-    CheckDayRepo,
+    CheckCafeRepo,
+    CheckRestaurantRepo,
     PointRepo,
     PositionRepo,
 )
@@ -32,18 +33,20 @@ class Database:
     can be used in the handlers or any others bot-side functions
     """
 
-    user: UserRepo
     """ User repository """
-    product: ProductRepo
+    user: UserRepo
     """ Product repository """
-    write_off: WriteOffRepo
+    product: ProductRepo
     """ WriteOff repository """
-    check_day: CheckDayRepo
+    write_off: WriteOffRepo
+    """ CheckCafeRepo repository """
+    check_cafe: CheckCafeRepo
+    """ CheckCafeRepo repository """
+    check_restaurant: CheckRestaurantRepo
     """ CheckDayRepo repository """
     point: PointRepo
-    """ CheckDayRepo repository """
-    position: PositionRepo
     """ PositionRepo repository """
+    position: PositionRepo
 
     session: AsyncSession
 
@@ -72,11 +75,18 @@ class Database:
         return WriteOffRepo(self.session)
 
     @property
-    def check_day(self) -> CheckDayRepo:
+    def check_cafe(self) -> CheckCafeRepo:
         """
-        The CheckDayRepo repository sessions are required to manage check_day operations.
+        The CheckCafeRepo repository sessions are required to manage check_day operations.
         """
-        return CheckDayRepo(self.session)
+        return CheckCafeRepo(self.session)
+
+    @property
+    def check_restaurant(self) -> CheckRestaurantRepo:
+        """
+        The CheckRestaurantRepo repository sessions are required to manage check_day operations.
+        """
+        return CheckRestaurantRepo(self.session)
 
     @property
     def point(self) -> PointRepo:

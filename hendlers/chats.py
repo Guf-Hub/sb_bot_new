@@ -1,13 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-import logging
 import os
 
 from aiogram import Router, F
 from aiogram.filters import Command, CommandStart, or_f, and_f
 from aiogram.types import (Message, FSInputFile)
 from aiogram.utils.chat_action import ChatActionSender
-from aiogram.fsm.context import FSMContext
 
 from common.questions import help_msg
 from core.config import settings
@@ -26,9 +22,6 @@ from structures.keybords.cb_makers import create_inline_kb
 
 from core.bot import bot
 from structures.role import Role
-from utils.utils import get_user_role
-
-# from services.questions import help_msg
 
 
 router = Router(name=__name__)

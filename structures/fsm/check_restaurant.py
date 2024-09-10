@@ -28,7 +28,7 @@ class Evening(StatesGroup):
     file7 = State()
 
 
-class CheckReport(StatesGroup):
+class CheckRestaurantReport(StatesGroup):
     """Класс для сборки данных подтверждения проверки отчета"""
     report_id = State()
     comment = State()

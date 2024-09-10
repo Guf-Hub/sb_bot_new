@@ -33,7 +33,7 @@ async def create_db():
                     role=Role.admin
                 ))
 
-            async_engine.echo = True
+            async_engine.echo = False
             logging.info("Database created successfully")
     except Exception as e:
         logging.error("Create database error: %s", e, exc_info=True)
@@ -45,7 +45,7 @@ async def drop_db():
         async with async_engine.begin() as conn:
             async_engine.echo = False
             await conn.run_sync(Base.metadata.drop_all)
-            async_engine.echo = True
+            async_engine.echo = False
     except Exception as e:
         logging.error("Drop database error: %s", e, exc_info=True)
 
@@ -53,10 +53,10 @@ async def drop_db():
 async def truncate_table(table):
     try:
         async with async_session_factory() as session:
-            async_engine.echo = True
+            async_engine.echo = False
             await session.execute(delete(table))
             await session.commit()
-            async_engine.echo = True
+            async_engine.echo = False
     except Exception as e:
         logging.error("Drop table error: %s", e, exc_info=True)
 
@@ -67,5 +67,6 @@ async def drop_tables(tables):
             async_engine.echo = False
             tables = [table.__table__ for table in tables]
             await conn.run_sync(Base.metadata.drop_all, tables=tables, checkfirst=True)
+            async_engine.echo = False
     except Exception as e:
         logging.error("Drop tables error: %s", e, exc_info=True)

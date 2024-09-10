@@ -58,14 +58,10 @@ router = Router(name=__name__)
 router.message.filter(and_f(AdminFilter(), ChatTypeFilter(['private'])))
 
 statesEmployee = StateFilter(
-    EmployeeAdd,
+    EmployeeAdd(),
     EmployeeDelete(),
     EmployeeUpdate(),
     EmployeeActivate(),
-    PointAdd(),
-    PointDelete(),
-    PointUpdate(),
-    Mailing(),
 )
 
 
@@ -130,15 +126,15 @@ async def employee_add_user_id(message: Message, state: FSMContext, db: Database
     else:
 
         staff = (
-            f'<b>Уже в базе</b> 🤷‍♂️\n'
-            f'Сотрудник: {user.full_name}\n'
+            f'<b>⚠️ Уже в базе</b>️\n'
+            f'{user.full_name}\n'
             f'Должность: {user.position}\n'
             f'Точка: {user.point}\n'
             f'Доступ: {user.role.value}\n'
             f'Активен: {user.status}'
         )
 
-        await message.reply(staff, reply_markup=boss_staff_menu)
+        await message.answer(staff, reply_markup=boss_staff_menu)
         await state.clear()
 
 
@@ -224,7 +220,7 @@ async def employee_add_role(message: Message, state: FSMContext, db: Database):
             f'{data["first_name"]} {data["last_name"]}\n'
             f'Должность: {data["position"]}\n'
             f'Точка: {data["point"]}\n'
-            f'Доступ: {role}',
+            f'Доступ: {message.text}',
             reply_markup=boss_staff_menu
         )
         try:

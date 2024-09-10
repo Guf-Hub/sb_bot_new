@@ -1,19 +1,14 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import logging
-import pprint
 import time
 from datetime import datetime, timezone
 
 import pytils
 from aiogram import Router, F
-from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 
-from aiogram.filters import StateFilter
+from aiogram.filters import StateFilter, Command
 from aiogram.types import (CallbackQuery, Message, FSInputFile)
 from aiogram.utils.chat_action import ChatActionSender
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.bot import bot
 from core.config import settings, GoogleSheetsSettings, TgBot
@@ -33,10 +28,11 @@ from structures.keybords import (
     boss_main_menu,
 )
 
-from structures.fsm.check_day import Morning, Evening, CheckReport
+from structures.fsm.check_restaurant import Morning, Evening, CheckRestaurantReport
 
 from services.async_google_service import google_exits_by_point
 from common.questions import check_q, BIG_CONFIG
+from structures.role import Role
 
 from utils.utils import dt_formatted, get_current_datetime, time_in_range
 from utils.check_media import media_create
@@ -47,11 +43,34 @@ g: GoogleSheetsSettings = settings.gs
 router = Router(name=__name__)
 router.message.filter(ChatTypeFilter(['private']))
 
+states = StateFilter(
+    Morning(),
+    Evening(),
+    CheckRestaurantReport(),
+)
+
+
+@router.message(Command("cancel"), states)
+@router.message(F.text.lower().in_({'отмена', 'отменить', '❌ отмена', '⬆ выйти', 'cancel'}), states)
+async def cancel_check_day_handler(message: Message, state: FSMContext, db: Database) -> None:
+    await state.clear()
+    user_role_reply_markup = {
+        Role.admin: ('Еще вопросы? 👇', boss_report_menu),
+        Role.staff: ('Еще вопросы? 👇', main_menu),
+        Role.supervisor: ('Еще вопросы? 👇', main_menu)
+    }
+
+    user_id = message.from_user.id
+    user_role = await db.user.get_role(user_id=user_id)
+    answer_text, reply_markup = user_role_reply_markup.get(user_role)
+
+    await message.answer(answer_text, disable_web_page_preview=True, reply_markup=reply_markup)
+
 
 class PhotoPath:
     """Класс для получения пути к планограмме для конкретной точки"""
 
-    def __init__(self, point: str , db: Database):
+    def __init__(self, point: str, db: Database):
         self.point = point
         self.db = db
 
@@ -63,7 +82,7 @@ class PhotoPath:
 
 
 async def is_unique(message: Message, point: str, report_type: str, db: Database, date: str = None) -> bool:
-    check = await db.check_day.is_unique_report_by_date(
+    check = await db.check_restaurant.is_unique_report_by_date(
         point=point,
         report_type=report_type,
         date=date if date else dt_formatted(6)
@@ -229,7 +248,7 @@ async def morning_file2(message: Message, state: FSMContext, db: Database):
 
         files_id = ', '.join([data['file1'], data['file2']])
 
-        report_id = await db.check_day.add(
+        report_id = await db.check_restaurant.add(
             CheckDay(
                 add_date=add_date,
                 type=report_type,
@@ -262,7 +281,7 @@ async def morning_file2(message: Message, state: FSMContext, db: Database):
         supervisor_id = supervisor.user_id
 
         kb = create_inline_kb(
-            btns={'✅ Подтвердить?': f'checkReport_{report_id}'},
+            btns={'✅ Подтвердить?': f'checkRestaurantReport_{report_id}'},
         )
 
         try:
@@ -298,7 +317,7 @@ async def morning_file3(message: Message, state: FSMContext, db: Database):
 
         files_id = data.get('file3')
 
-        report_id = await db.check_day.add(
+        report_id = await db.check_restaurant.add(
             CheckDay(
                 add_date=add_date,
                 type=report_type,
@@ -332,7 +351,7 @@ async def morning_file3(message: Message, state: FSMContext, db: Database):
         supervisor_id = supervisor.user_id
 
         kb = create_inline_kb(
-            btns={'✅ Подтвердить?': f'checkReport_{report_id}'},
+            btns={'✅ Подтвердить?': f'checkRestaurantReport_{report_id}'},
         )
 
         try:
@@ -454,7 +473,7 @@ async def evening_file3(message: Message, state: FSMContext, db: Database):
                 files_id = ', '.join([data['file1'], data['file2'], data['file3']])
                 report_type = data.get('type')
 
-                report_id = await db.check_day.add(
+                report_id = await db.check_restaurant.add(
                     CheckDay(
                         add_date=add_date,
                         type=report_type,
@@ -487,7 +506,7 @@ async def evening_file3(message: Message, state: FSMContext, db: Database):
                     supervisor_id = supervisor.user_id
 
                     kb = create_inline_kb(
-                        btns={'✅ Подтвердить?': f'checkReport_{report_id}'},
+                        btns={'✅ Подтвердить?': f'checkRestaurantReport_{report_id}'},
                     )
 
                     try:
@@ -562,7 +581,7 @@ async def evening_file7(message: Message, state: FSMContext, db: Database):
                 [data['file1'], data['file2'], data['file3'], data['file4'], data['file5'], data['file6'],
                  data['file7']])
 
-            report_id = await db.check_day.add(
+            report_id = await db.check_restaurant.add(
                 CheckDay(
                     add_date=add_date,
                     type=report_type,
@@ -596,7 +615,7 @@ async def evening_file7(message: Message, state: FSMContext, db: Database):
             supervisor_id = supervisor.user_id
 
             kb = create_inline_kb(
-                btns={'✅ Подтвердить?': f'checkReport_{report_id}'},
+                btns={'✅ Подтвердить?': f'checkRestaurantReport_{report_id}'},
             )
 
             try:
@@ -614,7 +633,7 @@ async def evening_file7(message: Message, state: FSMContext, db: Database):
         await message.answer('Загрузи одно видео!!!')
 
 
-@router.callback_query(F.data.startswith('checkReport'), StateFilter(None))
+@router.callback_query(F.data.startswith('checkRestaurantReport'), StateFilter(None))
 async def check_report_start(callback_query: CallbackQuery, state: FSMContext, db: Database):
     """Сборка данных подтверждения проверки отчета"""
     await callback_query.answer()
@@ -625,7 +644,7 @@ async def check_report_start(callback_query: CallbackQuery, state: FSMContext, d
         answer_data = callback_query.data
         report_id = int(answer_data.split('_')[1])
         await state.update_data(report_id=report_id)
-        await state.set_state(CheckReport.comment)
+        await state.set_state(CheckRestaurantReport.comment)
         await bot.send_message(user_id, 'Введи комментарий к отчету 👇', reply_markup=ok)
         await bot.delete_message(user_id, message_id=callback_query.message.message_id)
     else:
@@ -633,7 +652,7 @@ async def check_report_start(callback_query: CallbackQuery, state: FSMContext, d
         await bot.send_message(user_id, 'Нет доступа', reply_markup=remove)
 
 
-@router.message(StateFilter(CheckReport.comment), F.text)
+@router.message(StateFilter(CheckRestaurantReport.comment), F.text)
 async def check_report_comment(message: Message, state: FSMContext, db: Database):
     user_id = message.from_user.id
 
@@ -641,7 +660,7 @@ async def check_report_comment(message: Message, state: FSMContext, db: Database
     report_id = data.get('report_id')
     comment = message.text
 
-    report = await db.check_day.get_by_id(report_id=report_id)
+    report = await db.check_restaurant.get_by_id(report_id=report_id)
 
     time_diff_seconds = (
             get_current_datetime().replace(tzinfo=timezone.utc) -
@@ -651,7 +670,7 @@ async def check_report_comment(message: Message, state: FSMContext, db: Database
     duration_formatted = time.strftime("%H:%M:%S", seconds)
     duration = datetime.strptime(time.strftime("%H:%M:%S", seconds), "%H:%M:%S").time()
 
-    await db.check_day.update(
+    await db.check_restaurant.update(
         report_id=report_id,
         comment=comment,
         verified=True,
@@ -703,7 +722,7 @@ async def check_report_comment(message: Message, state: FSMContext, db: Database
                     check.append(user)
                     await bot.send_message(user, msg)
             except Exception as e:
-                logging.warning(f'check_report_comment schedule {user} > {e}')
+                logging.warning('Check report comment schedule: %s > %s', user, e)
                 continue
 
     logging.info(f'{user_ids=} {check=}')
@@ -726,19 +745,4 @@ async def send_other_staff(message: Message, media=None, photo=None, msg=None, c
                 elif not photo and user_id not in check:
                     await bot.send_message(user_id, msg)
         except Exception as e:
-            logging.warning(f'{user_id} > {e}')
-
-# async def send_other_staff(message, media=None, photo=None, msg=None, check=None):
-#     """Отправка наблюдателям"""
-#     for user_id in tg.OBSERVERS:
-#         try:
-#             if message.from_id != user_id:
-#                 if media:
-#                     await bot.send_media_group(user_id, media=media, allow_sending_without_reply=True)
-#                 elif msg and photo:
-#                     await bot.send_photo(user_id, photo=photo, caption=msg, allow_sending_without_reply=True)
-#                 elif user_id not in check and msg and not photo:
-#                     await bot.send_message(user_id, msg)
-#         except Exception as e:
-#             logging.warning(f'{user_id} > {e}')
-#             continue
+            logging.warning('user_id: %s > %s', user_id, e)

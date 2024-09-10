@@ -4,7 +4,7 @@ from .point import Point
 from .position import Position
 from .write_off import WriteOff
 from .product import Product
-from .check_day import CheckDay
+from .check_day import CheckCafe, CheckRestaurant
 
 __all__ = (
     'Base',
@@ -13,5 +13,6 @@ __all__ = (
     'Position',
     'WriteOff',
     'Product',
-    'CheckDay',
+    'CheckCafe',
+    'CheckRestaurant',
 )
