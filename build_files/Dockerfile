@@ -55,11 +55,10 @@ ENV PATH="${PATH}:${POETRY_VENV}/bin"
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y git
-#RUN git clone https://github.com/Guf-Hub/sb_bot_new.git .
 
 ENV USER=Guf-Hub
-ENV BRANCH=main
 ENV REPO=sb_bot_new
+ENV BRANCH=main
 ENV GIT_HOME=/app
 
 ADD https://api.github.com/repos/$USER/$REPO/git/refs/heads/$BRANCH version.json
