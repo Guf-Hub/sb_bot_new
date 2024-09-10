@@ -571,7 +571,7 @@ async def send_reports(message: Message, db: Database):
         elif message.text == '📸 За вчера':
             date = dt_formatted(6, minus_days=1)
 
-        reports_by_date = await db.check_day.get_reports_by_date(date=date)
+        reports_by_date = await db.check_cafe.get_reports_by_date(date=date)
         reports = [report for report in reports_by_date]
 
         if len(reports) > 0:
@@ -640,7 +640,7 @@ async def report_by_day(message: Message, db: Database):
     """Отчет по отправленным за день"""
     date = dt_formatted(6)
 
-    reports = await db.check_day.get_reports_by_period(date, date)
+    reports = await db.check_cafe.get_reports_by_period(date, date)
     supervisors = await db.user.get_supervisors()
     point_count = dict(zip([sv.user_id for sv in supervisors], [len(sv.points.split(", ")) for sv in supervisors]))
 
@@ -678,7 +678,7 @@ async def report_by_month(message: Message, db: Database):
     end_date = (datetime(date.year, date.month, 1) + timedelta(
         days=calendar.monthrange(date.year, date.month)[1] - 1)).strftime("%Y-%m-%d")
 
-    reports = await db.check_day.get_reports_by_period(start_date, end_date)
+    reports = await db.check_cafe.get_reports_by_period(start_date, end_date)
 
     now = message.date
     supervisors = await db.user.get_supervisors()
