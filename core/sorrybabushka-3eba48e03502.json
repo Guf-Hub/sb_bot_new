@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "sorrybabushka",
+  "private_key_id": "3eba48e0350269e309f3e3a48a73a38b67300879",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDYy3x/JRmGfUVI\nx1ddchAfstJPSM9pe5PEF/lVaYL52E2vAZ0bmMIpkAziTTqSixybZhFEYYieErw8\nL3vukuVVDRLprc83JkR3nvWsr4yMCJzv/jR1/D5XQNmVKyXRELAYZDYGIUslC7m4\nKubKbGgnpoYe0HNuKASU0rDk8NAuTtXbLOKJdc0M03D+hjzhqYbo3h7SyZMwPNbY\nGFBBK92Y/deECN0PCAkOMGSEOxv4XKAXSgKa6N8Wngz6gIRtI9Iww27eDKbe3/+J\nNIw79Mw1OOd3EHB3cm3WUzQtg2J2TAJxQWr0epjglvKzASwN0mAf+f1edrTxKimQ\n4LTnjULtAgMBAAECggEABkCsLmCWtrXIjfD4jes7GCbzVjJj5Qdu5hdzlf6NNqvX\nOxEWrmk+pFiRaTolUn0CTgsTZr+nYzkSxmuaLUcoUnEmQVNwKAeJrvzd2hAAGOPW\nCZKb1xFM3P2zqM/jRH8w4lXgPFdb0E2LxYowji2ykqjaB8EnAHTVWP4l+EcSbLDE\nyTcsnWt3sU2fkpSS+T+94NjfYWMl1VDS+HkbNDoqZpsCcrKFxScwe6aNuFc3rn05\nGJMIzJbRACMSy4jpIEdg95XC51budLwCIhx3KU/enYIVoWCixy6sDMzp5IyR5DOW\nUD+KdtvZowhpWdziS2HKM5qhCClRzGMFZFORUD2OQQKBgQD13QPwt376Jzd848ro\nKmnZrMwCzR6E4ss2EXzmEKgiAXUvJolKcONDJmOHs+t71sFlLQsjvqD4rV+qgqNp\nuNpAKZpXiTlGrRvpEL6mbb/myPUHVZrmSOCBAQfcL8NK09D3p+Z+lfotGlaSa/m2\nsDwgYAPd7WvLA2Jtpn8Kb8CBoQKBgQDhu6pVTx69e8/jX3JSmGhQONTWkzgsvF5h\nMVJYPnWyl/9Wzbwvf6cuZRNDOBCZSUetEkW6L2yL4JOyc8AH9zFoF6FiThlES1iR\nbo9p0dv38wVxR68riRgoXJ/JHADRK5d7Zx1iGcrG5Q6YiYrbYcYo/PQ1UhHwfgAy\nSUii13tVzQKBgDHJUp3xGnZfcJ4KprECvbKFij5a+P4hytKlEeyonNNeBjPJEu4P\nFAYqBOea6GmIYFszltjjJkeVHBU0JREojJGHmyh0sjN8pHU6ndCn0r9SHEQi8p4F\nTejxo3zT8zD42Yz84/DoP+PYPIWj9conv9UyfDX5eOWARvM7Tuh3Hr1hAoGBAKNf\nd4AWq2DoYyVkxxEQTS8Ccsh59IYsLwKY98f2LKj9aUghzrlx4kWp0a8svJa0erPA\nLcb628zA1SSqsakSNyfnMl47t/29qnRXWGR2BoYF1UKPZzBTILDVmK+tHMpGinQ9\nxP5jPGeHEHFF2sG8mfbAXN7abzFngCzk7TUuT41hAoGAE30WejLCcVDu3CrHC1Rc\nVJQ19kKKAOspZOCOMmJCazVXkwR4lNNBxTH9e/2QR2klX7fczoAGFqTez4Wl2+jY\neJcgo+NDrsD4dt1J0l+lf2IMuzYXvZpW1qLccekN1vdaJgSQaMpM2zzqkuPszVQK\nIUhDpJ2jr7SUZ0aoxX2bSiE=\n-----END PRIVATE KEY-----\n",
+  "client_email": "sbapibot@sorrybabushka.iam.gserviceaccount.com",
+  "client_id": "108687904451681528946",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sbapibot%40sorrybabushka.iam.gserviceaccount.com"
+}
