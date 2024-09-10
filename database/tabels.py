@@ -30,7 +30,7 @@ async def create_db():
                     last_name="Бот",
                     position="Тест",
                     point="Офис",
-                    role=Role.administrator
+                    role=Role.admin
                 ))
 
             async_engine.echo = True

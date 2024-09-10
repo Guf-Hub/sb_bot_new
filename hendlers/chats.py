@@ -121,9 +121,9 @@ async def command_help(message: Message, db: Database):
     """This function handles the command "help" and sends the help message to the user."""
 
     user_role_reply_markup = {
-        Role.admin:(help_msg['boss'], boss_main_menu),
+        Role.admin: (help_msg['boss'], boss_main_menu),
         Role.staff: (help_msg['main'], main_menu),
-        Role.supervisor:(help_msg['main'], main_menu)
+        Role.supervisor: (help_msg['main'], main_menu)
     }
 
     user_id = message.from_user.id
@@ -138,6 +138,3 @@ async def command_my_id(message: Message):
     user_id = message.from_user.id
     answer_text = f'Твой Telegram id: {user_id}'
     await message.answer(answer_text, disable_web_page_preview=True)
-
-
-

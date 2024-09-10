@@ -96,7 +96,7 @@ statesOther = StateFilter(
 
 @router.message(Command("cancel"), statesOther)
 @router.message(F.text.lower().in_({'отмена', 'отменить', '❌ отмена', '⬆ выйти', 'cancel'}), statesOther)
-async def cancel_employee_handler(message: Message, state: FSMContext, db: Database) -> None:
+async def cancel_other_handler(message: Message, state: FSMContext, db: Database) -> None:
     await state.clear()
     user_role_reply_markup = {
         Role.admin: ('Еще вопросы? 👇', boss_other_menu),

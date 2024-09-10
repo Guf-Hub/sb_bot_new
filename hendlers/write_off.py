@@ -82,7 +82,7 @@ states = StateFilter(
 
 @router.message(Command("cancel"), states)
 @router.message(F.text.lower().in_({'отмена', 'отменить', '❌ отмена', '⬆ выйти', 'cancel'}), states)
-async def cancel_handler(message: Message, state: FSMContext, db: Database) -> None:
+async def cancel_write_off_handler(message: Message, state: FSMContext, db: Database) -> None:
     await state.clear()
     user_role_reply_markup = {
         Role.admin: ('Еще вопросы? 👇', boss_main_menu),
@@ -689,9 +689,9 @@ async def empty(message: Message, db: Database):
     text = message.text
 
     user_role_reply_markup = {
-        Role.admin:  boss_main_menu,
-        Role.staff:  main_menu,
-        Role.supervisor:  main_menu
+        Role.admin: boss_main_menu,
+        Role.staff: main_menu,
+        Role.supervisor: main_menu
     }
 
     user_id = message.from_user.id
