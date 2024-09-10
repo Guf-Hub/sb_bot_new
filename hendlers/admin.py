@@ -25,7 +25,7 @@ from structures.keybords import (
     boss_other_menu, points_menu_all, remove, employee_menu, cancel_menu, positions,
     yes_no,
     no,
-    points_menu_sv, role_menu
+    points_menu_sv, role_menu, boss_main_menu
 )
 
 from structures.keybords.cb_makers import create_inline_kb, create_kb
@@ -224,13 +224,23 @@ async def employee_add_role(message: Message, state: FSMContext, db: Database):
             f'{data["first_name"]} {data["last_name"]}\n'
             f'Должность: {data["position"]}\n'
             f'Точка: {data["point"]}\n'
-            f'Доступ: {data["role"]}',
+            f'Доступ: {role}',
             reply_markup=boss_staff_menu
         )
         try:
-            await bot.send_message(data['user_id'],
-                                   f'Аккаунт активирован ✌\n{data["first_name"]}, теперь ты в команде!!!\nМенюшечка 👇',
-                                   reply_markup=main_menu)
+
+            user_role_reply_markup = {
+                Role.admin: boss_main_menu,
+                Role.staff: main_menu,
+                Role.supervisor: main_menu
+            }
+
+            user_id = data['user_id']
+            user_role = await db.user.get_role(user_id=user_id)
+            reply_markup = user_role_reply_markup.get(user_role)
+            msg = f'Аккаунт активирован ✌\n{data["first_name"]}, теперь ты в команде!!!\nМеню 👇'
+            await bot.send_message(user_id, msg, reply_markup=reply_markup)
+
         except Exception as ex:
             logging.warning("user_id: %s, %s", data["user_id"], ex)
         await state.clear()

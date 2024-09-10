@@ -139,7 +139,7 @@ services:
       - postgres
 
   postgres_exporter:
-    container_name: sb-postgres-exporter
+    container_name: sb-pg-exporter
     image: prometheuscommunity/postgres-exporter:v0.10.1
     env_file:
       - ./.env
