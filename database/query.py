@@ -5,7 +5,7 @@ from sqlalchemy import select, update, delete, func, or_, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from .models import User, Point, Position, WriteOff, Product, CheckDay
+from .models import User, Point, Position, WriteOff, Product, CheckCafe
 
 
 """Работа с User"""
@@ -172,10 +172,10 @@ class DBHelper:
             .where(WriteOff.point == point)
         )
 
-    """Работа с CheckDay"""
+    """Работа с CheckCafe"""
 
     @staticmethod
-    async def check_day_add(session: AsyncSession, check_day: CheckDay):
+    async def check_day_add(session: AsyncSession, check_day: CheckCafe):
         session.add(check_day)
         await session.commit()
         return check_day.id
@@ -183,26 +183,26 @@ class DBHelper:
     @staticmethod
     async def check_day_get(session: AsyncSession, report_id: int):
         return await session.scalar(
-            select(CheckDay)
+            select(CheckCafe)
             .options(
-                joinedload(CheckDay.user),
+                joinedload(CheckCafe.user),
             )
-            .where(CheckDay.id == report_id)
+            .where(CheckCafe.id == report_id)
         )
 
     @staticmethod
     async def check_day_reports_get_by_date(session: AsyncSession, date: str):
         return await session.scalars(
-            select(CheckDay)
+            select(CheckCafe)
             .options(
-                joinedload(CheckDay.user),
+                joinedload(CheckCafe.user),
             )
-            .where(CheckDay.add_date == date)
+            .where(CheckCafe.add_date == date)
         )
 
     @staticmethod
     async def check_day_update(session: AsyncSession, report_id: int, **kwargs):
-        query = update(CheckDay).where(CheckDay.id == report_id).values(**kwargs)
+        query = update(CheckCafe).where(CheckCafe.id == report_id).values(**kwargs)
         await session.execute(query)
         await session.commit()
 
@@ -212,12 +212,12 @@ class DBHelper:
     ):
         """Check if a report for a specific date already exists in the database (check_day)"""
         return await session.scalar(
-            select(CheckDay)
-            .options(joinedload(CheckDay.user))
+            select(CheckCafe)
+            .options(joinedload(CheckCafe.user))
             .where(
-                CheckDay.point == point,
-                CheckDay.type == report_type,
-                CheckDay.add_date == date,
+                CheckCafe.point == point,
+                CheckCafe.type == report_type,
+                CheckCafe.add_date == date,
             )
         )
 
@@ -227,25 +227,25 @@ class DBHelper:
     ):
         return await session.execute(
             select(
-                CheckDay.supervisor.label("sv"),
-                CheckDay.type,
-                func.count(CheckDay.in_time).label("count_in_time"),
-                func.sum(CheckDay.in_time).label("sum_in_time"),
+                CheckCafe.supervisor.label("sv"),
+                CheckCafe.type,
+                func.count(CheckCafe.in_time).label("count_in_time"),
+                func.sum(CheckCafe.in_time).label("sum_in_time"),
                 (
                     func.sum(
                         func.ifnull(
-                            func.strftime("%s", CheckDay.created_at)
-                            - func.strftime("%s", CheckDay.created_at),
+                            func.strftime("%s", CheckCafe.created_at)
+                            - func.strftime("%s", CheckCafe.created_at),
                             0,
                         )
                     )
-                    / func.count(CheckDay.created_at)
+                    / func.count(CheckCafe.created_at)
                 ).label("avg_check_datetime"),
             )
-            .select_from(CheckDay)
-            .where(CheckDay.add_date.between(date_start, date_end))
-            .group_by(CheckDay.supervisor, CheckDay.type)
-            .order_by(CheckDay.supervisor.asc(), CheckDay.type.desc())
+            .select_from(CheckCafe)
+            .where(CheckCafe.add_date.between(date_start, date_end))
+            .group_by(CheckCafe.supervisor, CheckCafe.type)
+            .order_by(CheckCafe.supervisor.asc(), CheckCafe.type.desc())
             .scalars()
         ).all()
 
