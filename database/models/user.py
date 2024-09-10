@@ -9,11 +9,10 @@ from .base import Base, int_pk
 
 if TYPE_CHECKING:
     from .write_off import WriteOff
-    from .check_day import CheckDayCafe, CheckDayRestaurant
+    from .check import CheckCafe, CheckRestaurant
 
 
 class User(Base):
-
     id: Mapped[int_pk]
     user_id: Mapped[int] = mapped_column(BigInteger, unique=True, index=True)
     first_name: Mapped[str] = mapped_column(String(30), nullable=True)
@@ -23,8 +22,8 @@ class User(Base):
     position = mapped_column(ForeignKey("positions.name"), nullable=False)
 
     write_offs: Mapped[List["WriteOff"]] = relationship(back_populates="user")
-    check_cafe: Mapped[List["CheckDayCafe"]] = relationship(back_populates="user")
-    check_restaurant: Mapped[List["CheckDayRestaurant"]] = relationship(back_populates="user")
+    check_cafes: Mapped[List["CheckCafe"]] = relationship(back_populates="user")
+    check_restaurants: Mapped[List["CheckRestaurant"]] = relationship(back_populates="user")
 
     points: Mapped[str] = mapped_column(String(255), nullable=True)
     role: Mapped[Role] = mapped_column(Enum(Role), default=Role.staff)

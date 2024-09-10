@@ -7,7 +7,7 @@ from .base import Base, int_pk
 
 class CheckCafe(UserRelationMixin, Base):
     _set_plural = False
-    _user_back_populates = "check_cafe"
+    _user_back_populates = "check_cafes"
 
     id: Mapped[int_pk]
     add_date: Mapped[str] = mapped_column(Date)
@@ -27,7 +27,7 @@ class CheckCafe(UserRelationMixin, Base):
 
 class CheckRestaurant(UserRelationMixin, Base):
     _set_plural = False
-    _user_back_populates = "check_restaurant"
+    _user_back_populates = "check_restaurants"
 
     id: Mapped[int_pk]
     add_date: Mapped[str] = mapped_column(Date)

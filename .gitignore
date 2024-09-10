@@ -163,3 +163,4 @@ cython_debug/
 /postgres
 /redis
 /queries.yaml
+/database/bot.db
