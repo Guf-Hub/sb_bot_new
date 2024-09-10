@@ -265,12 +265,12 @@ async def employee_add_end(message: Message, state: FSMContext, db: Database):
     )
 
     await message.answer(
-        'Добавили сотрудника 😁\n'
-        f'***************\n'
+        f'<b>Добавили сотрудника</b> 😁\n'
+        f'{'*' * 15}\n'
         f'{data["first_name"]} {data["last_name"]}\n'
         f'Должность: {data["position"]}\n'
         f'Точка: {data["point"]}\n'
-        f'Доступ: {data["role"]}\n'
+        f'Доступ: {Role[data["role"]].value}\n'
         f'Точки: {data["points"] if data.get("points") is not None else "Нет"}',
         reply_markup=boss_staff_menu
     )
@@ -354,8 +354,8 @@ async def employee_update_role(message: Message, state: FSMContext, db: Database
             col_f='C')
 
         await message.answer(
-            f'Обновили сотрудника 😁\n'
-            f'***************\n'
+            f'<b>Обновили сотрудника</b> 😁\n'
+            f'{'*'*15}\n'
             f'{data["last_name"]} {data["first_name"]}\n'
             f'Должность: {data["position"]}\n'
             f'Точка: {data["point"]}\n'
@@ -383,8 +383,8 @@ async def employee_update_end(message: Message, state: FSMContext, db: Database)
         col_f='C')
 
     await message.answer(
-        f'Обновили сотрудника 😁\n'
-        f'***************\n'
+        f'<b>Обновили сотрудника</b> 😁\n'
+        f'{'*' * 15}\n'
         f'{data["last_name"]} {data["first_name"]}\n'
         f'Должность: {data["position"]}\n'
         f'Точка: {data["point"]}\n'

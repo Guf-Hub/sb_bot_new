@@ -21,7 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.config import settings
 from core.bot import bot
 
-from database import async_engine, db, create_db, async_session_factory, Database, User
+from database import async_engine, db, create_db, async_session_factory, Database, User, drop_db
 from database.models import Position, Point
 
 from commands.commands import commands_admin
