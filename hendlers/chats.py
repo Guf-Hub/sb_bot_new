@@ -1,3 +1,4 @@
+import logging
 import os
 
 from aiogram import Router, F
@@ -32,8 +33,9 @@ router.message.filter(ChatTypeFilter(['private']))
 async def start_command(message: Message, db: Database):
     user_id = message.from_user.id
     first_name = message.from_user.first_name if message.from_user.first_name else None
-
-    if not await db.user.is_exist(user_id=int(user_id)):
+    ex = await db.user.is_exist(user_id=int(user_id))
+    logging.info(ex)
+    if not ex:
         last_name = message.from_user.last_name if message.from_user.last_name else None
 
         inline = create_inline_kb(
