@@ -54,13 +54,13 @@ async def start_command(message: Message, db: Database):
                        f'Ждем активации от Александры @sasha_izy, для дальнейшей работы.')
 
         await message.answer(welcome_msg)
-
     else:
 
         user_role_reply_markup = {
             Role.admin: ('Еще вопросы? 👇', boss_main_menu),
             Role.staff: ('Еще вопросы? 👇', main_menu),
-            Role.supervisor: ('Еще вопросы? 👇', main_menu)
+            Role.supervisor: ('Еще вопросы? 👇', main_menu),
+            None: ('Еще вопросы? 👇', boss_main_menu)
         }
 
         user_id = message.from_user.id

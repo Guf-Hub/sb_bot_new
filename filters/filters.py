@@ -1,3 +1,5 @@
+import logging
+
 from aiogram.filters import Filter
 from aiogram.types import Message
 from aiogram import Bot
@@ -24,12 +26,12 @@ class AdminFilter(Filter):
         pass
 
     async def __call__(self, message: Message, bot: Bot) -> bool:
+        # if message.from_user.id in settings.bot.ADMINS:
+        #     return True
         async with async_session_factory() as session:
             db = Database(session)
             role = await db.user.get_role(user_id=message.from_user.id)
-            if role is None:
-                return message.from_user.id in settings.bot.ADMINS
-            print(role, Role.admin, role == Role.admin)
+            logging.info(role, Role.admin, role == Role.admin)
             return role == Role.admin
 
 
@@ -37,11 +39,11 @@ class StaffFilter(Filter):
     def __init__(self) -> None:
         pass
 
-    async def __call__(self, message: Message, bot: Bot ) -> bool:
+    async def __call__(self, message: Message, bot: Bot) -> bool:
         async with async_session_factory() as session:
             db = Database(session)
             role = await db.user.get_role(user_id=message.from_user.id)
-            print(role, Role.staff, role == Role.staff)
+            logging.info(role, Role.staff, role == Role.staff)
             return role == Role.staff
 
 
@@ -49,11 +51,11 @@ class SupervisorFilter(Filter):
     def __init__(self) -> None:
         pass
 
-    async def __call__(self, message: Message, bot: Bot ) -> bool:
+    async def __call__(self, message: Message, bot: Bot) -> bool:
         async with async_session_factory() as session:
             db = Database(session)
             role = await db.user.get_role(user_id=message.from_user.id)
-            print(role, Role.staff, role == Role.supervisor)
+            logging.info(role, Role.staff, role == Role.supervisor)
             return role == Role.supervisor
 
 
@@ -61,11 +63,11 @@ class BaristaFilter(Filter):
     def __init__(self) -> None:
         pass
 
-    async def __call__(self, message: Message, bot: Bot ) -> bool:
+    async def __call__(self, message: Message, bot: Bot) -> bool:
         async with async_session_factory() as session:
             db = Database(session)
             user = await db.user.get_one(user_id=message.from_user.id)
-            print(user.position)
+            logging.info(user.position)
             return user.position == 'Бариста'
 
 
@@ -73,11 +75,11 @@ class WaiterFilter(Filter):
     def __init__(self) -> None:
         pass
 
-    async def __call__(self, message: Message, bot: Bot ) -> bool:
+    async def __call__(self, message: Message, bot: Bot) -> bool:
         async with async_session_factory() as session:
             db = Database(session)
             user = await db.user.get_one(user_id=message.from_user.id)
-            print(user.position)
+            logging.info(user.position)
             return user.position == 'Официант'
 
 
@@ -85,9 +87,9 @@ class AdministratorFilter(Filter):
     def __init__(self) -> None:
         pass
 
-    async def __call__(self, message: Message, bot: Bot ) -> bool:
+    async def __call__(self, message: Message, bot: Bot) -> bool:
         async with async_session_factory() as session:
             db = Database(session)
             user = await db.user.get_one(user_id=message.from_user.id)
-            print(user.position)
+            logging.info(user.position)
             return user.position == 'Администратор'

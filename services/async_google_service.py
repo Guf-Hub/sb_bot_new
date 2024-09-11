@@ -404,7 +404,7 @@ async def google_update_row(book_id: str, sheet_name: str, array: Union[list, tu
 
             return True
     except Exception as ex:
-        logging.warning('Google update row:', exc_info=ex)
+        logging.warning('Google update row: %s', ex)
         return False
 
 
