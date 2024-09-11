@@ -21,6 +21,20 @@ class ChatTypeFilter(Filter):
             return message.chat.type in self.chat_type
 
 
+class ActiveFilter(Filter):
+    def __init__(self) -> None:
+        pass
+
+    async def __call__(self, message: Message, bot: Bot) -> bool:
+        async with async_session_factory() as session:
+            db = Database(session)
+            active = await db.user.is_active(user_id=message.from_user.id)
+            if active:
+                return True
+            else:
+                return False
+
+
 class AdminFilter(Filter):
     def __init__(self) -> None:
         pass
