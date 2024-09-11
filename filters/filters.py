@@ -31,8 +31,8 @@ class AdminFilter(Filter):
         async with async_session_factory() as session:
             db = Database(session)
             role = await db.user.get_role(user_id=message.from_user.id)
-            logging.info(role, Role.admin.name, role == Role.admin.name)
-            return role == Role.admin.name
+            logging.info(Role.admin.name, role == Role.admin)
+            return role == Role.admin
 
 
 class StaffFilter(Filter):
@@ -43,8 +43,8 @@ class StaffFilter(Filter):
         async with async_session_factory() as session:
             db = Database(session)
             role = await db.user.get_role(user_id=message.from_user.id)
-            logging.info(role, Role.staff.name, role == Role.staff.name)
-            return role == Role.staff.name
+            logging.info(Role.staff, role == Role.staff)
+            return role == Role.staff
 
 
 class SupervisorFilter(Filter):
