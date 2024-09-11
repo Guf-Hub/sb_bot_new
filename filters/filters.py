@@ -40,12 +40,12 @@ class AdminFilter(Filter):
         pass
 
     async def __call__(self, message: Message, bot: Bot) -> bool:
-        # if message.from_user.id in settings.bot.ADMINS:
-        #     return True
+        user_id = message.from_user.id
+        if user_id in settings.bot.ADMINS:
+            return True
         async with async_session_factory() as session:
             db = Database(session)
-            role = await db.user.get_role(user_id=message.from_user.id)
-            logging.info(role == Role.admin)
+            role = await db.user.get_role(user_id=user_id)
             return role == Role.admin
 
 
@@ -54,10 +54,10 @@ class StaffFilter(Filter):
         pass
 
     async def __call__(self, message: Message, bot: Bot) -> bool:
+        user_id = message.from_user.id
         async with async_session_factory() as session:
             db = Database(session)
-            role = await db.user.get_role(user_id=message.from_user.id)
-            logging.info(role == Role.staff)
+            role = await db.user.get_role(user_id=user_id)
             return role == Role.staff
 
 
@@ -69,7 +69,6 @@ class SupervisorFilter(Filter):
         async with async_session_factory() as session:
             db = Database(session)
             role = await db.user.get_role(user_id=message.from_user.id)
-            logging.info(role, Role.staff, role == Role.supervisor)
             return role == Role.supervisor
 
 
@@ -81,7 +80,6 @@ class BaristaFilter(Filter):
         async with async_session_factory() as session:
             db = Database(session)
             user = await db.user.get_one(user_id=message.from_user.id)
-            logging.info(user.position)
             return user.position == 'Бариста'
 
 
@@ -93,7 +91,6 @@ class WaiterFilter(Filter):
         async with async_session_factory() as session:
             db = Database(session)
             user = await db.user.get_one(user_id=message.from_user.id)
-            logging.info(user.position)
             return user.position == 'Официант'
 
 
@@ -105,5 +102,4 @@ class AdministratorFilter(Filter):
         async with async_session_factory() as session:
             db = Database(session)
             user = await db.user.get_one(user_id=message.from_user.id)
-            logging.info(user.position)
             return user.position == 'Администратор'

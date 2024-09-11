@@ -79,6 +79,7 @@ async def employee_add_user_id(message: Message, state: FSMContext, db: Database
 
         staff = (
             f'<b>⚠️ Уже в базе</b>️\n'
+            f'{"*" * 25}\n'
             f'{user.full_name}\n'
             f'Должность: {user.position}\n'
             f'Точка: {user.point}\n'
@@ -168,7 +169,7 @@ async def employee_add_role(message: Message, state: FSMContext, db: Database):
 
         await message.answer(
             f'Добавили сотрудника 😁\n'
-            f'***************\n'
+            f'{"*" * 25}\n'
             f'{data["first_name"]} {data["last_name"]}\n'
             f'Должность: {data["position"]}\n'
             f'Точка: {data["point"]}\n'
@@ -218,7 +219,7 @@ async def employee_add_end(message: Message, state: FSMContext, db: Database):
 
     await message.answer(
         f'<b>Добавили сотрудника</b> 😁\n'
-        f'{'*' * 15}\n'
+        f'{"*" * 25}\n'
         f'{data["first_name"]} {data["last_name"]}\n'
         f'Должность: {data["position"]}\n'
         f'Точка: {data["point"]}\n'
@@ -307,7 +308,7 @@ async def employee_update_role(message: Message, state: FSMContext, db: Database
 
         await message.answer(
             f'<b>Обновили сотрудника</b> 😁\n'
-            f'{'*'*15}\n'
+            f'{"*" * 25}\n'
             f'{data["last_name"]} {data["first_name"]}\n'
             f'Должность: {data["position"]}\n'
             f'Точка: {data["point"]}\n'
@@ -336,7 +337,7 @@ async def employee_update_end(message: Message, state: FSMContext, db: Database)
 
     await message.answer(
         f'<b>Обновили сотрудника</b> 😁\n'
-        f'{'*' * 15}\n'
+        f'{"*" * 25}\n'
         f'{data["last_name"]} {data["first_name"]}\n'
         f'Должность: {data["position"]}\n'
         f'Точка: {data["point"]}\n'
