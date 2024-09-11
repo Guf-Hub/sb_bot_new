@@ -7,7 +7,7 @@ from aiogram.filters import and_f, StateFilter
 from aiogram.types import (Message)
 from aiogram.utils.chat_action import ChatActionSender
 
-from filters.filters import AdminFilter, ChatTypeFilter
+from filters.filters import AdminFilter, ChatTypeFilter, StaffFilter
 
 from structures.keybords import (
     boss_report_menu
@@ -24,7 +24,7 @@ from core.config import settings, GoogleSheetsSettings
 gs: GoogleSheetsSettings = settings.gs
 
 router = Router(name=__name__)
-router.message.filter(and_f(AdminFilter(), StateFilter(), ChatTypeFilter(['private'])))
+router.message.filter(and_f(AdminFilter(), StaffFilter(), ChatTypeFilter(['private'])))
 
 
 @router.message(F.text.lower().in_({'📸 за сегодня', '📸 за вчера'}))
