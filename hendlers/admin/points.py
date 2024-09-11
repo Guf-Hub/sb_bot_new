@@ -54,7 +54,7 @@ async def point_add_name(message: Message, state: FSMContext):
     # await message.answer('Введи адрес 👇', reply_markup=remove)
     # await state.set_state(PointAdd.address)
     await state.set_state(PointAdd.ALIAS)
-    await message.answer('Введи алиас (Балашиха > b) 👇', reply_markup=remove)
+    await message.answer('Введи алиас (3 символа, например: Балашиха > b) 👇', reply_markup=remove)
 
 
 # @router.message(StateFilter(PointAdd.address), F.text)
