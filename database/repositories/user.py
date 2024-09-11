@@ -1,4 +1,5 @@
 """ User repository file """
+import logging
 from typing import Optional, Type, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,6 +33,7 @@ class UserRepo(Repository[User]):
 
     async def is_exist(self, user_id: int) -> bool:
         result = await self.session.execute(select(exists().where(User.id == user_id)))
+        logging.info(result)
         return result.scalar()
 
     async def get_one_by_pk(self, pk: int) -> User | None:
