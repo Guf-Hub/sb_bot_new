@@ -16,18 +16,15 @@ from dispatcher import get_dispatcher, get_redis_storage
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler_di import ContextSchedulerDecorator
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
 from core.bot import bot
 
-from database import async_engine, db, create_db, async_session_factory, Database, User, drop_db
-from database.models import Position, Point
+from database import create_db, async_session_factory
 
 from commands.commands import commands_admin
-from hendlers import mailing
+from hendlers.mailings import mailing
 
-from structures.keybords.keybords_list import company_positions, company_points
 from structures.mw_data_structure import TransferData
 
 from services.logging_configurate import logging_configurate

@@ -31,7 +31,7 @@ from structures.keybords.keybords import (
     boss_projects_expenses_menu,
     cancel_menu,
     remove,
-    no_check, main_menu,
+    no_check
 )
 
 from structures.fsm.expenses import (
@@ -42,7 +42,7 @@ from structures.keybords.keybords_list import boss_category_m
 from services.async_google_service import google_add_row, google_authorize_token, google_save_file
 from services.path import create_dir, clear_dir, create_src
 from structures.role import Role
-from utils.utils import includes_number, get_current_datetime, get_user_role
+from utils.utils import includes_number, get_current_datetime
 from core.config import settings, GoogleSheetsSettings
 
 gs: GoogleSheetsSettings = settings.gs
@@ -50,28 +50,18 @@ gs: GoogleSheetsSettings = settings.gs
 router = Router(name=__name__)
 router.message.filter(and_f(AdminFilter(), ChatTypeFilter(['private'])))
 
-
-states = StateFilter(
+statesExpenses = StateFilter(
     Home(),
     Payments(),
     Projects(),
 )
 
 
-@router.message(Command("cancel"), states)
-@router.message(F.text.lower().in_({'отмена', 'отменить', '❌ отмена', '⬆ выйти', 'cancel'}), states)
-async def cancel_check_day_handler(message: Message, state: FSMContext, db: Database) -> None:
+@router.message(Command("cancel"), statesExpenses)
+@router.message(F.text.lower().in_({'отмена', 'отменить', '❌ отмена', '⬆ выйти', 'cancel'}), statesExpenses)
+async def cancel_expenses_handler(message: Message, state: FSMContext) -> None:
     await state.clear()
-    user_role_reply_markup = {
-        Role.admin: ('Еще вопросы? 👇', boss_payments_menu),
-        Role.staff: ('Еще вопросы? 👇', main_menu),
-        Role.supervisor: ('Еще вопросы? 👇', main_menu)
-    }
-
-    user_id = message.from_user.id
-    user_role = await db.user.get_role(user_id=user_id)
-    answer_text, reply_markup = user_role_reply_markup.get(user_role)
-
+    answer_text, reply_markup = ('Еще вопросы? 👇', boss_payments_menu)
     await message.answer(answer_text, disable_web_page_preview=True, reply_markup=reply_markup)
 
 
