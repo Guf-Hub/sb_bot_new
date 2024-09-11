@@ -41,7 +41,7 @@ tg: TgBot = settings.bot
 g: GoogleSheetsSettings = settings.gs
 
 router = Router(name=__name__)
-router.message.filter(ChatTypeFilter(['private']))
+router.message.filter(ChatTypeFilter(['private']), )
 
 states = StateFilter(
     CafeMorning(),
@@ -625,7 +625,7 @@ async def evening_file7(message: Message, state: FSMContext, db: Database):
                 logging.info(
                     f'"{report_type}" {point} на проверке у {supervisor_id} {supervisor.full_name}, {dt_formatted()}')
             except Exception as e:
-                logging.warning(f'{supervisor_id} {supervisor.full_name} > {e}')
+                logging.warning("User_id: %s, %s > %s", supervisor_id, supervisor.full_name, e)
 
         await state.clear()
 
@@ -707,7 +707,7 @@ async def check_report_comment(message: Message, state: FSMContext, db: Database
         try:
             await bot.send_message(supervisor.user_id, msg)
         except Exception as e:
-            logging.warning(f'{supervisor.user_id} {supervisor.full_name} > {e}')
+            logging.warning("User_id: %s, %s > %s", supervisor.user_id, supervisor.full_name, e)
 
     if user_id in tg.BOSS:
         await message.answer('Еще вопросы? 👇', reply_markup=boss_main_menu)
@@ -727,7 +727,7 @@ async def check_report_comment(message: Message, state: FSMContext, db: Database
                     check.append(user)
                     await bot.send_message(user, msg)
             except Exception as e:
-                logging.warning(f'check_report_comment schedule {user} > {e}')
+                logging.warning(f'Check report comment: %s > %s', user, e)
                 continue
 
     logging.info(f'{user_ids=} {check=}')
@@ -750,7 +750,7 @@ async def send_other_staff(message: Message, media=None, photo=None, msg=None, c
                 elif not photo and user_id not in check:
                     await bot.send_message(user_id, msg)
         except Exception as e:
-            logging.warning(f'{user_id} > {e}')
+            logging.warning("User_id: %s > %s", user_id, e)
 
 # async def send_other_staff(message, media=None, photo=None, msg=None, check=None):
 #     """Отправка наблюдателям"""
@@ -764,5 +764,5 @@ async def send_other_staff(message: Message, media=None, photo=None, msg=None, c
 #                 elif user_id not in check and msg and not photo:
 #                     await bot.send_message(user_id, msg)
 #         except Exception as e:
-#             logging.warning(f'{user_id} > {e}')
+#             logging.warning("User_id: %s > %s", user_id, e)
 #             continue

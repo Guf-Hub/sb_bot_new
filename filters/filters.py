@@ -1,8 +1,13 @@
+from typing import Union
+
 from aiogram.filters import Filter
 from aiogram.types import Message
 from aiogram import Bot
+from structures.mw_data_structure import TransferData, TransferUserData
 
+from database import Database
 from core.config import settings
+from structures.role import Role
 
 
 class ChatTypeFilter(Filter):
@@ -21,5 +26,73 @@ class AdminFilter(Filter):
     def __init__(self) -> None:
         pass
 
-    async def __call__(self, message: Message, bot: Bot) -> bool:
-        return message.from_user.id in settings.bot.ADMINS
+    async def __call__(self, message: Message, bot: Bot, data: Union[TransferUserData, TransferData], ) -> bool:
+        if not isinstance(data, TransferData):
+            print(data)
+            return message.from_user.id in settings.bot.ADMINS
+
+        db: Database = data["db"]  # type : ignore
+        role = await db.user.get_role(user_id=message.from_user.id)
+        print(role, Role.admin, role == Role.admin)
+        return role == Role.admin
+
+
+class StaffFilter(Filter):
+    def __init__(self) -> None:
+        pass
+
+    async def __call__(self, message: Message, bot: Bot, data: Union[TransferUserData, TransferData], ) -> bool:
+        if not isinstance(data, TransferData):
+            return message.from_user.id not in settings.bot.ADMINS
+
+        db: Database = data["db"]  # type : ignore
+        role = await db.user.get_role(user_id=message.from_user.id)
+        print(role, Role.staff, role == Role.staff)
+        return role == Role.staff
+
+
+class SupervisorFilter(Filter):
+    def __init__(self) -> None:
+        pass
+
+    async def __call__(self, message: Message, bot: Bot, data: Union[TransferUserData, TransferData], ) -> bool:
+        if not isinstance(data, TransferData):
+            return message.from_user.id not in settings.bot.ADMINS
+
+        db: Database = data["db"]  # type : ignore
+        role = await db.user.get_role(user_id=message.from_user.id)
+        print(role, Role.staff, role == Role.supervisor)
+        return role == Role.supervisor
+
+
+class BaristaFilter(Filter):
+    def __init__(self) -> None:
+        pass
+
+    async def __call__(self, message: Message, bot: Bot, data: Union[TransferUserData, TransferData], ) -> bool:
+        db: Database = data["db"]  # type : ignore
+        user = await db.user.get_one(user_id=message.from_user.id)
+        print(user.position)
+        return user.position == 'Бариста'
+
+
+class WaiterFilter(Filter):
+    def __init__(self) -> None:
+        pass
+
+    async def __call__(self, message: Message, bot: Bot, data: Union[TransferUserData, TransferData], ) -> bool:
+        db: Database = data["db"]  # type : ignore
+        user = await db.user.get_one(user_id=message.from_user.id)
+        print(user.position)
+        return user.position == 'Официант'
+
+
+class AdministratorFilter(Filter):
+    def __init__(self) -> None:
+        pass
+
+    async def __call__(self, message: Message, bot: Bot, data: Union[TransferUserData, TransferData], ) -> bool:
+        db: Database = data["db"]  # type : ignore
+        user = await db.user.get_one(user_id=message.from_user.id)
+        print(user.position)
+        return user.position == 'Администратор'
