@@ -41,7 +41,7 @@ from structures.keybords import (
     yes_no,
 )
 from structures.keybords.keybords_list import write_off_reasons
-from hendlers.fsm import WriteOffAdd, WriteOffSend, GrindSetting
+from fsm.write_off import WriteOffAdd, WriteOffSend, GrindSetting
 
 from services.async_google_service import (
     google_save_file,

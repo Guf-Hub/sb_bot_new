@@ -1,7 +1,7 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-class Morning(StatesGroup):
+class RestaurantMorning(StatesGroup):
     """Класс для сбора Утреннего отчета"""
     type_key = State()
     type = State()
@@ -13,7 +13,7 @@ class Morning(StatesGroup):
     file3 = State()
 
 
-class Evening(StatesGroup):
+class RestaurantEvening(StatesGroup):
     """Класс для сбора Вечернего отчета"""
     date = State()
     type = State()

@@ -28,7 +28,7 @@ from structures.keybords import (
     boss_main_menu,
 )
 
-from hendlers.fsm.check_restaurant import Morning, Evening, CheckRestaurantReport
+from fsm.restaurant import RestaurantMorning, RestaurantEvening, CheckRestaurantReport
 
 from services.async_google_service import google_exits_by_point
 from common.questions import check_q, BIG_CONFIG
@@ -44,8 +44,8 @@ router = Router(name=__name__)
 router.message.filter(ChatTypeFilter(['private']))
 
 states = StateFilter(
-    Morning(),
-    Evening(),
+    RestaurantMorning(),
+    RestaurantEvening(),
     CheckRestaurantReport(),
 )
 
@@ -109,21 +109,21 @@ async def morning_start(message: Message, state: FSMContext, db: Database):
         await state.clear()
         return await message.answer(f'Пользователя {user_id} нет в базе, добавьте себя, назначьте права!!!')
     await state.update_data(user_id=user.id)
-    await state.set_state(Morning.type_key)
+    await state.set_state(RestaurantMorning.type_key)
     await message.reply('Выбери 👇', reply_markup=morning_type_menu)
 
 
-@router.message(StateFilter(Morning.type_key), F.text)
+@router.message(StateFilter(RestaurantMorning.type_key), F.text)
 async def morning_type_key(message: Message, state: FSMContext):
     if message.text in ['Настройка', 'До 10', 'До 12']:
         await state.update_data(type_key=message.text)
-        await state.set_state(Morning.point)
+        await state.set_state(RestaurantMorning.point)
         await message.reply('Выбери точку 👇', reply_markup=await points_menu())
     else:
         await message.reply('Выбери 👇', reply_markup=morning_type_menu)
 
 
-@router.message(StateFilter(Morning.point), F.text)
+@router.message(StateFilter(RestaurantMorning.point), F.text)
 async def morning_point(message: Message, state: FSMContext, db: Database):
     point = message.text
     if await db.point.get_one(name=point):
@@ -139,7 +139,7 @@ async def morning_point(message: Message, state: FSMContext, db: Database):
 
         if type_key == 'Настройка':
             await state.update_data(type='Настройка')
-            await state.set_state(Morning.question_one)
+            await state.set_state(RestaurantMorning.question_one)
             await message.answer(check_q['cf_1'], reply_markup=all_ok)
         elif type_key == 'До 10':
             if await is_unique(message, point, report_type='Утренний до 10', db=db):
@@ -147,7 +147,7 @@ async def morning_point(message: Message, state: FSMContext, db: Database):
             else:
                 async with ChatActionSender.upload_photo(chat_id=user_id, bot=bot):
                     await state.update_data(type='Утренний до 10')
-                    await state.set_state(Morning.file1)
+                    await state.set_state(RestaurantMorning.file1)
                     photo = FSInputFile(await PhotoPath(point, db).set(), filename=f'{point}_plane.png')
                     await message.answer_photo(caption=check_q['mq_1'], photo=photo, reply_markup=remove)
         elif type_key == 'До 12':
@@ -155,26 +155,26 @@ async def morning_point(message: Message, state: FSMContext, db: Database):
                 await state.clear()
             else:
                 await state.update_data(type='Утренний до 12')
-                await state.set_state(Morning.file3)
+                await state.set_state(RestaurantMorning.file3)
                 await message.answer(check_q['mq_3'], reply_markup=remove)
     else:
         await message.answer('Похоже ты ошибся, выбери точку 👇', reply_markup=await points_menu())
 
 
-@router.message(StateFilter(Morning.question_one), F.text)
+@router.message(StateFilter(RestaurantMorning.question_one), F.text)
 async def morning_q1(message: Message, state: FSMContext):
     data = await state.get_data()
     type_key = data.get('type_key')
 
     if type_key == 'Настройка':
         await state.update_data(question_one=message.text)
-        await state.set_state(Morning.file1)
+        await state.set_state(RestaurantMorning.file1)
         await message.answer(check_q['cf_2'], reply_markup=remove)
     else:
         await message.answer(check_q['cf_1'], reply_markup=all_ok)
 
 
-@router.message(StateFilter(Morning.file1), F.photo)
+@router.message(StateFilter(RestaurantMorning.file1), F.photo)
 async def morning_file1(message: Message, state: FSMContext, db: Database):
     """`Настройка`"""
     user_id = message.from_user.id
@@ -222,11 +222,11 @@ async def morning_file1(message: Message, state: FSMContext, db: Database):
         await message.answer('Отправили на проверку 👍', reply_markup=reply_markup)
         await state.clear()
     elif type_key == 'До 10':
-        await state.set_state(Morning.file2)
+        await state.set_state(RestaurantMorning.file2)
         await message.answer(check_q['mq_2'])
 
 
-@router.message(StateFilter(Morning.file2), F.photo)
+@router.message(StateFilter(RestaurantMorning.file2), F.photo)
 async def morning_file2(message: Message, state: FSMContext, db: Database):
     """`Утренний до 10`"""
     user_id = message.from_user.id
@@ -296,7 +296,7 @@ async def morning_file2(message: Message, state: FSMContext, db: Database):
     await state.clear()
 
 
-@router.message(StateFilter(Morning.file3), F.video)
+@router.message(StateFilter(RestaurantMorning.file3), F.video)
 async def morning_file3(message: Message, state: FSMContext, db: Database):
     """`Утренний до 12`"""
     user_id = message.from_user.id
@@ -376,7 +376,7 @@ async def evening_start(message: Message, state: FSMContext, db: Database):
         return await message.answer(f'Пользователя {user_id} нет в базе, добавьте себя, назначьте права!!!')
 
     await state.update_data(user_id=user.id)
-    await state.set_state(Evening.date)
+    await state.set_state(RestaurantEvening.date)
     date_start = dt_formatted(1)
     date_end = dt_formatted(1, minus_days=1)
 
@@ -388,7 +388,7 @@ async def evening_start(message: Message, state: FSMContext, db: Database):
     await message.reply('За какой день отчёт?', reply_markup=dates_inline)
 
 
-@router.callback_query(F.data.startswith('eveningDate'), StateFilter(Evening.date))
+@router.callback_query(F.data.startswith('eveningDate'), StateFilter(RestaurantEvening.date))
 async def evening_date(query: CallbackQuery, state: FSMContext, db: Database):
     """Проверка выбора даты в вечернем отчёте"""
 
@@ -399,7 +399,7 @@ async def evening_date(query: CallbackQuery, state: FSMContext, db: Database):
         answer_data = query.data
         date = answer_data.split('_')[1]
         await state.update_data(date=date, type='Вечерний')
-        await state.set_state(Evening.point)
+        await state.set_state(RestaurantEvening.point)
         await query.message.delete()
         await bot.send_message(user_id, f'Отчет за: {date}')
         await bot.send_message(user_id, 'Выбери точку 👇', reply_markup=await points_menu())
@@ -408,7 +408,7 @@ async def evening_date(query: CallbackQuery, state: FSMContext, db: Database):
         await bot.send_message(user_id, 'Нет доступа', reply_markup=remove)
 
 
-@router.message(StateFilter(Evening.point), F.text)
+@router.message(StateFilter(RestaurantEvening.point), F.text)
 async def evening_point(message: Message, state: FSMContext, db: Database):
     point = message.text
     if await db.point.get_one(name=point):
@@ -419,33 +419,33 @@ async def evening_point(message: Message, state: FSMContext, db: Database):
         if await is_unique(message, point, report_type=data.get('type'), date=date, db=db):
             await state.clear()
         else:
-            await state.set_state(Evening.file1)
+            await state.set_state(RestaurantEvening.file1)
             await message.answer(check_q['ev_1'], reply_markup=remove)
     else:
         await message.answer('Похоже ты ошибся, выбери точку 👇', reply_markup=await points_menu())
 
 
-@router.message(StateFilter(Evening.file1), F.video | F.photo | F.document | F.text)
+@router.message(StateFilter(RestaurantEvening.file1), F.video | F.photo | F.document | F.text)
 async def evening_file1(message: Message, state: FSMContext):
     if message.video:
         await state.update_data(file1=message.video.file_id)
-        await state.set_state(Evening.file2)
+        await state.set_state(RestaurantEvening.file2)
         await message.answer(check_q['ev_2'])
     else:
         await message.answer('Загрузи одно видео!!!')
 
 
-@router.message(StateFilter(Evening.file2), F.video | F.photo | F.document | F.text)
+@router.message(StateFilter(RestaurantEvening.file2), F.video | F.photo | F.document | F.text)
 async def evening_file2(message: Message, state: FSMContext):
     if message.video:
         await state.update_data(file2=message.video.file_id)
-        await state.set_state(Evening.file3)
+        await state.set_state(RestaurantEvening.file3)
         await message.answer(check_q['ev_3'])
     else:
         await message.answer('Загрузи одно видео!!!')
 
 
-@router.message(StateFilter(Evening.file3), F.video | F.photo | F.document | F.text)
+@router.message(StateFilter(RestaurantEvening.file3), F.video | F.photo | F.document | F.text)
 async def evening_file3(message: Message, state: FSMContext, db: Database):
     if message.video:
 
@@ -520,43 +520,43 @@ async def evening_file3(message: Message, state: FSMContext, db: Database):
 
                 await state.clear()
             else:
-                await state.set_state(Evening.file4)
+                await state.set_state(RestaurantEvening.file4)
                 await message.answer(check_q['ev_4'])
     else:
         await message.answer('Загрузи одно видео!!!')
 
 
-@router.message(StateFilter(Evening.file4), F.video | F.photo | F.document | F.text)
+@router.message(StateFilter(RestaurantEvening.file4), F.video | F.photo | F.document | F.text)
 async def evening_file4(message: Message, state: FSMContext):
     if message.video:
         await state.update_data(file4=message.video.file_id)
-        await state.set_state(Evening.file5)
+        await state.set_state(RestaurantEvening.file5)
         await message.answer(check_q['ev_5'])
     else:
         await message.answer('Загрузи одно видео!!!')
 
 
-@router.message(StateFilter(Evening.file5), F.video | F.photo | F.document | F.text)
+@router.message(StateFilter(RestaurantEvening.file5), F.video | F.photo | F.document | F.text)
 async def evening_file5(message: Message, state: FSMContext):
     if message.video:
         await state.update_data(file5=message.video.file_id)
-        await state.set_state(Evening.file6)
+        await state.set_state(RestaurantEvening.file6)
         await message.answer(check_q['ev_6'])
     else:
         await message.answer('Загрузи одно видео!!!')
 
 
-@router.message(StateFilter(Evening.file6), F.video | F.photo | F.document | F.text)
+@router.message(StateFilter(RestaurantEvening.file6), F.video | F.photo | F.document | F.text)
 async def evening_file6(message: Message, state: FSMContext):
     if message.video:
         await state.update_data(file6=message.video.file_id)
-        await state.set_state(Evening.file7)
+        await state.set_state(RestaurantEvening.file7)
         await message.answer(check_q['ev_7'])
     else:
         await message.answer('Загрузи одно видео!!!')
 
 
-@router.message(StateFilter(Evening.file7), F.video | F.photo | F.document | F.text)
+@router.message(StateFilter(RestaurantEvening.file7), F.video | F.photo | F.document | F.text)
 async def evening_file7(message: Message, state: FSMContext, db: Database):
     if message.video:
 
