@@ -32,7 +32,7 @@ class UserRepo(Repository[User]):
         return await self.session.scalar(select(User).where(User.user_id == user_id))
 
     async def is_exist(self, user_id: int) -> bool:
-        result = await self.session.execute(select(exists().where(User.id == user_id)))
+        result = await self.session.execute(select(exists().where(User.user_id == user_id)))
         return result.scalar()
 
     async def get_one_by_pk(self, pk: int) -> User | None:
