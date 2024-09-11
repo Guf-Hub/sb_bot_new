@@ -12,7 +12,7 @@ from aiogram.utils.chat_action import ChatActionSender
 
 from core.bot import bot
 from core.config import settings, GoogleSheetsSettings, TgBot
-from database import CheckDay, Database
+from database import CheckRestaurant, Database
 
 from filters.filters import ChatTypeFilter
 from structures.keybords.cb_makers import create_inline_kb
@@ -249,7 +249,7 @@ async def morning_file2(message: Message, state: FSMContext, db: Database):
         files_id = ', '.join([data['file1'], data['file2']])
 
         report_id = await db.check_restaurant.add(
-            CheckDay(
+            CheckRestaurant(
                 add_date=add_date,
                 type=report_type,
                 point=point,
@@ -318,7 +318,7 @@ async def morning_file3(message: Message, state: FSMContext, db: Database):
         files_id = data.get('file3')
 
         report_id = await db.check_restaurant.add(
-            CheckDay(
+            CheckRestaurant(
                 add_date=add_date,
                 type=report_type,
                 point=point,
@@ -474,7 +474,7 @@ async def evening_file3(message: Message, state: FSMContext, db: Database):
                 report_type = data.get('type')
 
                 report_id = await db.check_restaurant.add(
-                    CheckDay(
+                    CheckRestaurant(
                         add_date=add_date,
                         type=report_type,
                         point=point,
@@ -582,7 +582,7 @@ async def evening_file7(message: Message, state: FSMContext, db: Database):
                  data['file7']])
 
             report_id = await db.check_restaurant.add(
-                CheckDay(
+                CheckRestaurant(
                     add_date=add_date,
                     type=report_type,
                     point=point,
