@@ -34,9 +34,7 @@ from structures.keybords.keybords import (
     no_check
 )
 
-from structures.fsm.expenses import (
-    Home, Payments, Projects
-)
+from fsm.expenses import Home, Payments, Projects
 
 from structures.keybords.keybords_list import boss_category_m
 from services.async_google_service import google_add_row, google_authorize_token, google_save_file

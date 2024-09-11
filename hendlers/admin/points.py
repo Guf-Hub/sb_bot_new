@@ -12,11 +12,7 @@ from structures.keybords import (
     remove,
 )
 
-from structures.fsm.admin import (
-    PointAdd,
-    PointDelete,
-    PointUpdate,
-)
+from fsm.points import PointAdd, PointDelete, PointUpdate
 
 from database import Database
 from core.config import settings, GoogleSheetsSettings

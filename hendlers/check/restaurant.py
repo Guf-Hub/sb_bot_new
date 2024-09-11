@@ -28,7 +28,7 @@ from structures.keybords import (
     boss_main_menu,
 )
 
-from structures.fsm.check_restaurant import Morning, Evening, CheckRestaurantReport
+from hendlers.fsm.check_restaurant import Morning, Evening, CheckRestaurantReport
 
 from services.async_google_service import google_exits_by_point
 from common.questions import check_q, BIG_CONFIG

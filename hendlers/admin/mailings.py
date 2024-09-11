@@ -14,9 +14,7 @@ from structures.keybords import (
     cancel_menu, boss_report_menu
 )
 
-from structures.fsm.admin import (
-    Mailing,
-)
+from fsm.mailings import Mailing
 
 from core.bot import bot
 from database import Database

@@ -23,7 +23,7 @@ from structures.keybords import (
     boss_main_menu
 )
 
-from structures.fsm.admin import (
+from fsm.employee import (
     EmployeeAdd,
     EmployeeDelete,
     EmployeeUpdate,

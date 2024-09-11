@@ -28,7 +28,7 @@ from structures.keybords import (
     boss_main_menu,
 )
 
-from structures.fsm.check_cafe import CafeMorning, CafeEvening, CheckCafeReport
+from hendlers.fsm.check_cafe import CafeMorning, CafeEvening, CheckCafeReport
 
 from services.async_google_service import google_exits_by_point
 from common.questions import check_q, BIG_CONFIG

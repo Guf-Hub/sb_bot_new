@@ -30,33 +30,3 @@ class EmployeeDelete(StatesGroup):
 class EmployeeActivate(StatesGroup):
     """Класс для активации сотрудника в БД(users)"""
     FULL_NAME = State()
-
-
-class PointAdd(StatesGroup):
-    """Класс для добавления новой точки"""
-    NAME = State()
-    # ADDRESS = State()
-    # LATITUDE = State()
-    # LONGITUDE = State()
-    ALIAS = State()
-    STATUS = State()
-
-
-class PointUpdate(StatesGroup):
-    """Класс для добавления новой точки"""
-    NAME = State()
-    ADDRESS = State()
-    LATITUDE = State()
-    LONGITUDE = State()
-    ALIAS = State()
-    STATUS = State()
-
-
-class PointDelete(StatesGroup):
-    """Класс для удаления точки"""
-    NAME = State()
-
-
-class Mailing(StatesGroup):
-    """Класс массовой рассылки по сотрудникам"""
-    TEXT = State()
